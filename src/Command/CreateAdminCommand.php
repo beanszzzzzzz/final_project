@@ -13,7 +13,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
     name: 'app:create-admin',
-    description: 'Create an admin user for Carpe Diem',
+    description: 'Create an admin user for Bins Cafe',
 )]
 class CreateAdminCommand extends Command
 {
@@ -28,9 +28,9 @@ class CreateAdminCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('🎯 Create Admin User - Carpe Diem');
+        $io->title('🎯 Create Admin User - Bins Cafe');
 
-        $email = 'admin@carpediem.com';
+        $email = 'admin@binscafe.com';
         $password = 'admin123';
         $firstName = 'Admin';
         $lastName = 'User';

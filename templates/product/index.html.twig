@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Products - Carpe Diem{% endblock %}
+{% block title %}Products - Bins Cafe{% endblock %}
 
 {% block body %}
 <style>
@@ -239,22 +239,6 @@
 
                         <div class="product-price">
                             ₱{{ product.price|number_format(2) }}
-                        </div>
-
-                        <div class="product-nutrition">
-                            <h4>Nutritional Information</h4>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Calories:</span>
-                                <span class="nutrition-value">{{ product.calories }} kcal</span>
-                            </div>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Sugar:</span>
-                                <span class="nutrition-value">{{ product.sugarGrams }} g</span>
-                            </div>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Caffeine:</span>
-                                <span class="nutrition-value">{{ product.caffeineMg }} mg</span>
-                            </div>
                         </div>
 
                         <div class="product-actions">

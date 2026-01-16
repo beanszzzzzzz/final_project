@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ product.name }} - Carpe Diem{% endblock %}
+{% block title %}{{ product.name }} - Bins Cafe{% endblock %}
 
 {% block body %}
 <style>
@@ -328,24 +328,6 @@
                     <span class="detail-value">#{{ product.id }}</span>
                 </div>
             </div>
-
-            <!-- Nutritional Information -->
-            <div class="detail-section">
-                <h3>Nutritional Information</h3>
-                <div class="detail-row">
-                    <span class="detail-label">Calories</span>
-                    <span class="detail-value">{{ product.calories }} kcal</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Sugar</span>
-                    <span class="detail-value">{{ product.sugarGrams }} g</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Caffeine</span>
-                    <span class="detail-value">{{ product.caffeineMg }} mg</span>
-                </div>
-            </div>
-        </div>
 
         <!-- Edit Product Button Only -->
         <div class="product-actions">

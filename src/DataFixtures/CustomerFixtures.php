@@ -11,9 +11,9 @@ class CustomerFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $customers = [
-            ['Jhane Lomotos', 'jhanelomotos@tgmal.com', '09123456789', 'Santander, Cebu'],
-            ['Mary Angel', 'maryangel@gmail.com', '09234567890', 'Cebu City'],
-            ['Walk-in Customer', 'walkin@test.com', '09999999999', 'N/A'],
+            ['Karlo', 'karlo@gmail.com', '09987654321', 'San Jose, Negros Oriental'],
+            ['Angelo', 'Angelo@gmail.com', '09234567899', 'San Jose, Negros Oriental'],
+            ['Walk-in Customer', 'walkin@test.com', '09123456789', 'N/A'],
         ];
 
         foreach ($customers as [$name, $email, $phone, $address]) {

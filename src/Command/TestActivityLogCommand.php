@@ -27,7 +27,7 @@ class TestActivityLogCommand extends Command
         
         // Get admin user
         $user = $this->entityManager->getRepository(User::class)
-            ->findOneBy(['email' => 'admin@carpediem.com']);
+            ->findOneBy(['email' => 'admin@binscafe.com']);
 
         if (!$user) {
             $output->writeln('<error>❌ Admin user not found!</error>');

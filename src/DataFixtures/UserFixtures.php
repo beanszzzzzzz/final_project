@@ -20,7 +20,7 @@ class UserFixtures extends Fixture
     {
         // Create ADMIN user
         $admin = new User();
-        $admin->setEmail('admin@carpediem.com');
+        $admin->setEmail('admin@binscafe.com');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setIsActive(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
@@ -32,7 +32,7 @@ class UserFixtures extends Fixture
 
         // Create STAFF user
         $staff = new User();
-        $staff->setEmail('staff@carpediem.com');
+        $staff->setEmail('staff@binscafe.com');
         $staff->setRoles(['ROLE_STAFF']);
         $staff->setIsActive(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
@@ -44,7 +44,7 @@ class UserFixtures extends Fixture
 
         // Create CUSTOMER user
         $customer = new User();
-        $customer->setEmail('customer@carpediem.com');
+        $customer->setEmail('customer@binscafe.com');
         $customer->setRoles(['ROLE_USER']);
         $customer->setIsActive(true);
         $hashedPassword = $this->passwordHasher->hashPassword(

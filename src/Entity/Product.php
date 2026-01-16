@@ -25,16 +25,6 @@ class Product
 
     #[ORM\Column]
     private ?float $price = null;
-
-    #[ORM\Column]
-    private ?int $calories = null;
-
-    #[ORM\Column]
-    private ?int $sugarGrams = null;
-
-    #[ORM\Column]
-    private ?int $caffeineMg = null;
-
     /**
      * @var Collection<int, Stock>
      */
@@ -83,42 +73,6 @@ class Product
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getCalories(): ?int
-    {
-        return $this->calories;
-    }
-
-    public function setCalories(int $calories): static
-    {
-        $this->calories = $calories;
-
-        return $this;
-    }
-
-    public function getSugarGrams(): ?int
-    {
-        return $this->sugarGrams;
-    }
-
-    public function setSugarGrams(int $sugarGrams): static
-    {
-        $this->sugarGrams = $sugarGrams;
-
-        return $this;
-    }
-
-    public function getCaffeineMg(): ?int
-    {
-        return $this->caffeineMg;
-    }
-
-    public function setCaffeineMg(int $caffeineMg): static
-    {
-        $this->caffeineMg = $caffeineMg;
 
         return $this;
     }

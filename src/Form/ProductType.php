@@ -39,25 +39,6 @@ class ProductType extends AbstractType
                     'placeholder' => '0.00'
                 ]
             ])
-            ->add('calories', NumberType::class, [
-                'label' => 'Calories',
-                'attr' => [
-                    'placeholder' => 'Enter calories'
-                ]
-            ])
-            ->add('sugarGrams', NumberType::class, [
-                'label' => 'Sugar (grams)',
-                'attr' => [
-                    'step' => '0.1',
-                    'placeholder' => 'Enter sugar in grams'
-                ]
-            ])
-            ->add('caffeineMg', NumberType::class, [
-                'label' => 'Caffeine (mg)',
-                'attr' => [
-                    'placeholder' => 'Enter caffeine in mg'
-                ]
-            ])
         ;
     }
 
