@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Cozy cafe seating">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0ddc7"/>
+      <stop offset="100%" stop-color="#d2b090"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect x="180" y="170" width="840" height="450" rx="24" fill="#6e4b33"/>
+  <rect x="220" y="210" width="360" height="370" rx="18" fill="#e7c7a5"/>
+  <rect x="620" y="210" width="360" height="370" rx="18" fill="#e2bd97"/>
+  <rect x="420" y="450" width="360" height="36" rx="12" fill="#5a3c2a"/>
+  <circle cx="600" cy="388" r="72" fill="#c48655"/>
+</svg>

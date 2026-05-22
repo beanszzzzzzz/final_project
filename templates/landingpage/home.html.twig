@@ -1,0 +1,875 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bins Cafe — Home{% endblock %}
+
+{% block stylesheets %}
+<style>
+    :root {
+        --hero-night: #241510;
+        --hero-glow: #8e522d;
+        --paper: #fffdfa;
+        --paper-2: #f6efe6;
+        --ink-soft: #6f5643;
+    }
+
+    @keyframes fadeUpSoft {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes badgeFloat {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-4px);
+        }
+    }
+
+    /* ── HERO / BANNER ─────────────────────────── */
+    .hero {
+        background:
+            linear-gradient(120deg, rgba(25, 15, 11, 0.86) 0%, rgba(36, 20, 16, 0.72) 45%, rgba(56, 31, 20, 0.66) 100%),
+            url('/images/hero-coffee%20(2).jpg') center/cover no-repeat,
+            radial-gradient(circle at 88% 20%, rgba(200, 134, 74, 0.35), transparent 38%),
+            radial-gradient(circle at 10% 80%, rgba(122, 69, 40, 0.45), transparent 42%),
+            linear-gradient(140deg, var(--hero-night) 0%, #3b1f1f 50%, #4b2a19 100%);
+        min-height: 94vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 5.5rem 2rem 4.5rem;
+    }
+    .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 60% 80% at 70% 50%, rgba(200,134,74,0.14) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 60% at 20% 80%, rgba(92,51,23,0.36) 0%, transparent 60%);
+    }
+    .hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 22px 22px;
+        opacity: 0.18;
+    }
+    .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+    .hero-content {
+        animation: fadeUpSoft 0.65s ease-out both;
+    }
+    .hero-tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.24em;
+        color: #ffd7b3;
+        border: 1px solid rgba(255, 215, 179, 0.45);
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.4rem 1.05rem;
+        border-radius: 50px;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(4px);
+    }
+    .sticker-row {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    .sticker-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: var(--cream-light);
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .sticker-chip .symbol-sticker {
+        width: 1.4em;
+        height: 1.4em;
+        font-size: 0.85em;
+    }
+    .hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.6rem, 5vw, 4rem);
+        color: var(--cream-light);
+        line-height: 1.15;
+        margin-bottom: 1.5rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero-desc {
+        font-size: 1.02rem;
+        color: var(--cream-dark);
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+        max-width: 500px;
+        opacity: 0.92;
+    }
+    .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+    .hero-actions .btn-outline {
+        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .hero-actions .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.14);
+    }
+    .hero-stats {
+        display: flex;
+        gap: 1.2rem;
+        margin-top: 2.2rem;
+        flex-wrap: wrap;
+    }
+    .hero-stats > div {
+        min-width: 140px;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(5px);
+    }
+    .hero-stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--accent);
+        font-weight: 700;
+    }
+    .hero-stat-label { font-size: 0.8rem; color: var(--text-light); letter-spacing: 0.05em; margin-top: 0.2rem; }
+    .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        animation: fadeUpSoft 0.8s ease-out 0.08s both;
+    }
+    .hero-circle {
+        width: 500px;
+        height: 560px;
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 30% 25%, rgba(255, 214, 170, 0.18), transparent 40%),
+            linear-gradient(135deg, var(--brown-warm) 0%, var(--brown-mid) 100%);
+        border: 3px solid rgba(255, 223, 190, 0.26);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+        box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45), inset 0 0 0 10px rgba(255, 255, 255, 0.04);
+        overflow: hidden;
+    }
+    .hero-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        padding: 0.9rem;
+        box-sizing: border-box;
+        border-radius: 24px;
+        display: block;
+    }
+    .product-img.cup-art img {
+        object-fit: contain;
+        padding: 1rem;
+        background: linear-gradient(145deg, #f4e7d9 0%, #ead7c2 100%);
+    }
+    .hero-circle-icon { font-size: 5rem; }
+    .hero-circle-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: var(--cream-light);
+        text-align: center;
+        letter-spacing: 0.05em;
+    }
+    .hero-badge {
+        position: absolute;
+        bottom: 18px;
+        right: 14px;
+        background: var(--accent);
+        color: var(--white);
+        border-radius: 50%;
+        width: 90px;
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+        animation: badgeFloat 3.8s ease-in-out infinite;
+    }
+
+    /* ── OUR STORY ─────────────────────────────── */
+    .story {
+        background:
+            linear-gradient(180deg, var(--paper-2) 0%, #f3eadf 100%);
+    }
+    .story-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5rem;
+        align-items: center;
+    }
+    .story-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+    .story-img-box {
+        width: 100%;
+        max-width: 440px;
+        aspect-ratio: 4/5;
+        background: linear-gradient(145deg, #7b4a2f 0%, #5f3623 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6rem;
+        box-shadow: 0 18px 45px rgba(45, 22, 10, 0.25);
+        overflow: hidden;
+    }
+    .story-img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .story-card {
+        position: absolute;
+        bottom: -24px;
+        right: -24px;
+        background: var(--brown-dark);
+        color: var(--cream-light);
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        width: 150px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .story-card-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--accent); }
+    .story-card-label { font-size: 0.78rem; color: var(--cream-dark); margin-top: 0.3rem; line-height: 1.4; }
+    .section-title .symbol-sticker {
+        width: 1.15em;
+        height: 1.15em;
+        margin-right: 0.22em;
+        background: var(--accent);
+        border-color: transparent;
+        color: var(--white);
+        vertical-align: 0.02em;
+    }
+    .story-text .section-sub { margin-bottom: 1.5rem; }
+    .story-features { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+    .story-feature { display: flex; align-items: flex-start; gap: 1rem; }
+    .story-feature-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 6px; flex-shrink: 0; }
+    .story-feature p { font-size: 0.9rem; color: var(--text-mid); line-height: 1.6; }
+    .story-feature strong { color: var(--brown-dark); }
+
+    /* ── PRODUCTS ──────────────────────────────── */
+    .products {
+        background:
+            linear-gradient(180deg, #fffdfa 0%, #faf4ec 100%);
+    }
+    .products-header { text-align: center; margin-bottom: 3.5rem; }
+    .story-text,
+    .products-header,
+    .things-header,
+    .why-visual,
+    .contact-strip .section-title,
+    .contact-strip .section-sub {
+        animation: fadeUpSoft 0.55s ease-out both;
+    }
+    .products-header .section-sub { margin: 0 auto; }
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    .product-card {
+        background: var(--paper);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #ecd8c6;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+        animation: fadeUpSoft 0.48s ease-out both;
+    }
+    .product-card:nth-child(2) { animation-delay: 0.04s; }
+    .product-card:nth-child(3) { animation-delay: 0.08s; }
+    .product-card:nth-child(4) { animation-delay: 0.12s; }
+    .product-card:nth-child(5) { animation-delay: 0.16s; }
+    .product-card:nth-child(6) { animation-delay: 0.2s; }
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 40px rgba(59,31,31,0.15);
+        border-color: #d7b798;
+    }
+    .product-img {
+        height: 200px;
+        background: var(--brown-warm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        overflow: hidden;
+    }
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .product-img.alt1 { background: var(--brown-mid); }
+    .product-img.alt2 { background: #6b3a2a; }
+    .product-img.alt3 { background: var(--brown-warm); }
+    .product-img.alt4 { background: #4a2c1a; }
+    .product-img.alt5 { background: var(--accent); }
+    .product-body { padding: 1.5rem; }
+    .product-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+    .product-tag .symbol-sticker {
+        width: 1.35em;
+        height: 1.35em;
+        font-size: 0.8em;
+        background: rgba(200, 134, 74, 0.15);
+        color: var(--brown-dark);
+        border-color: rgba(200, 134, 74, 0.4);
+    }
+    .product-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--brown-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.42rem; }
+    .product-name .symbol-sticker {
+        width: 1.4em;
+        height: 1.4em;
+        font-size: 0.75em;
+        background: var(--brown-dark);
+        border-color: transparent;
+        color: var(--cream-light);
+    }
+    .product-desc { font-size: 0.85rem; color: var(--text-mid); line-height: 1.6; margin-bottom: 1rem; }
+    .product-card .product-name,
+    .product-card .product-price {
+        letter-spacing: 0.01em;
+    }
+    .product-footer { display: flex; justify-content: space-between; align-items: center; }
+    .product-price { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--brown-dark); font-weight: 700; }
+    .product-btn {
+        background: var(--brown-dark);
+        color: var(--cream-light);
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .product-btn:hover { background: var(--brown-mid); }
+
+    /* ── OUR THINGS ────────────────────────────── */
+    .things {
+        background:
+            radial-gradient(circle at 15% 25%, rgba(200, 134, 74, 0.22), transparent 30%),
+            linear-gradient(160deg, #2f1a12 0%, #3f2418 55%, #4d2b1d 100%);
+        color: var(--cream-light);
+    }
+    .things .section-title { color: var(--cream-light); }
+    .things-header { text-align: center; margin-bottom: 3.5rem; }
+    .things-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    .thing-item { text-align: center; padding: 2rem 1rem; }
+    .thing-item {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        animation: fadeUpSoft 0.5s ease-out both;
+    }
+    .thing-item:nth-child(2) { animation-delay: 0.05s; }
+    .thing-item:nth-child(3) { animation-delay: 0.1s; }
+    .thing-item:nth-child(4) { animation-delay: 0.15s; }
+    .thing-photo {
+        width: calc(100% + 2rem);
+        height: 120px;
+        margin: -2rem -1rem 1rem;
+        object-fit: cover;
+        display: block;
+        border-radius: 14px 14px 0 0;
+        filter: saturate(0.9) contrast(1.05);
+    }
+    .thing-icon {
+        width: 72px;
+        height: 72px;
+        background: rgba(200,134,74,0.15);
+        border: 1px solid rgba(200,134,74,0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto 1.2rem;
+    }
+    .thing-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream-light); margin-bottom: 0.6rem; }
+    .thing-desc { font-size: 0.85rem; color: var(--text-light); line-height: 1.65; }
+
+    /* ── WHY CHOOSE ────────────────────────────── */
+    .why {
+        background:
+            linear-gradient(180deg, #f8f1e8 0%, #efe2d3 100%);
+    }
+    .why-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .why-visual {
+        background:
+            linear-gradient(145deg, rgba(58, 32, 23, 0.86) 0%, rgba(78, 43, 29, 0.86) 100%),
+            url('/images/hero-coffee%20(2).jpg') center / cover no-repeat;
+        border-radius: 16px;
+        padding: 3rem;
+        color: var(--cream-light);
+        box-shadow: 0 16px 40px rgba(55, 28, 17, 0.26);
+    }
+    .why-quote {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-style: italic;
+        color: var(--cream-light);
+        line-height: 1.5;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .why-quote::before { content: '\201C'; font-size: 3rem; color: var(--accent); line-height: 0.5; display: block; margin-bottom: 0.5rem; }
+    .why-author { display: flex; align-items: center; gap: 1rem; }
+    .why-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; color: var(--white); }
+    .why-author-info p:first-child { font-weight: 700; color: var(--cream-light); font-size: 0.9rem; }
+    .why-author-info p:last-child { font-size: 0.8rem; color: var(--text-light); }
+    .why-reasons { display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem; }
+    .why-reason { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .why-reason-num {
+        width: 44px;
+        height: 44px;
+        background: var(--brown-dark);
+        color: var(--accent);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .why-reason h4 { font-size: 1rem; color: var(--brown-dark); margin-bottom: 0.3rem; }
+    .why-reason p { font-size: 0.87rem; color: var(--ink-soft); line-height: 1.6; }
+
+    /* ── CONTACT ───────────────────────────────── */
+    .contact-strip {
+        background:
+            linear-gradient(130deg, #58301f 0%, #7c472c 100%);
+        padding: 5rem 2rem;
+        text-align: center;
+    }
+    .contact-strip .section-title { color: var(--cream-light); margin-bottom: 1rem; }
+    .contact-strip .section-sub { color: var(--cream-dark); margin: 0 auto 2.5rem; opacity: 0.85; }
+    .contact-strip-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .contact-info-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        background: #fdf9f4;
+    }
+    .contact-info-card {
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid #efdcc8;
+        box-shadow: 0 8px 24px rgba(92, 51, 23, 0.06);
+    }
+    .contact-info-icon { font-size: 2.2rem; margin-bottom: 1rem; }
+    .symbol-sticker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.6em;
+        height: 1.6em;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: var(--cream-light);
+        font-size: 0.95em;
+        line-height: 1;
+        font-weight: 700;
+        position: relative;
+        overflow: hidden;
+        text-indent: -9999px;
+        white-space: nowrap;
+    }
+    .symbol-sticker::before {
+        content: '';
+        width: 70%;
+        height: 70%;
+        background: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M4%208h11v5a5%205%200%200%201-5%205H9a5%205%200%200%201-5-5V8Zm11%201h2a2%202%200%200%201%200%204h-2V9Zm-8-5a1%201%200%200%201%201%201c0%20.9-.7%201.2-1%202-.3-.8-1-1.1-1-2a1%201%200%200%201%201-1Zm4%200a1%201%200%200%201%201%201c0%20.9-.7%201.2-1%202-.3-.8-1-1.1-1-2a1%201%200%200%201%201-1Z'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M4%208h11v5a5%205%200%200%201-5%205H9a5%205%200%200%201-5-5V8Zm11%201h2a2%202%200%200%201%200%204h-2V9Zm-8-5a1%201%200%200%201%201%201c0%20.9-.7%201.2-1%202-.3-.8-1-1.1-1-2a1%201%200%200%201%201-1Zm4%200a1%201%200%200%201%201%201c0%20.9-.7%201.2-1%202-.3-.8-1-1.1-1-2a1%201%200%200%201%201-1Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    .product-img .symbol-sticker {
+        width: 2.1em;
+        height: 2.1em;
+        font-size: 1.35em;
+    }
+    .contact-info-icon .symbol-sticker {
+        background: var(--accent);
+        border-color: transparent;
+        color: var(--white);
+    }
+    .contact-info-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.5rem; }
+    .contact-info-value { font-size: 0.95rem; color: var(--text-mid); line-height: 1.6; }
+
+    @media (min-width: 1600px) {
+        section { padding: 6rem 4rem; }
+        .hero { padding: 7rem 4rem 6rem; }
+        .hero-inner,
+        .container,
+        .contact-info-grid {
+            max-width: 1380px;
+        }
+        .contact-strip { padding: 6rem 4rem; }
+        .contact-info-grid { padding: 4.5rem 0; }
+    }
+
+    @media (max-width: 768px) {
+        .hero-inner, .story-inner, .why-inner { grid-template-columns: 1fr; }
+        .hero-visual { display: none; }
+        .products-grid { grid-template-columns: 1fr; }
+        .things-grid { grid-template-columns: 1fr 1fr; }
+        .contact-info-grid { grid-template-columns: 1fr; }
+        .story-card { right: 0; }
+        .hero { min-height: auto; padding-top: 4rem; }
+        .hero-stats > div { min-width: 47%; }
+    }
+
+    @media (max-width: 560px) {
+        .things-grid { grid-template-columns: 1fr; }
+        .hero-stats > div { min-width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-content,
+        .hero-visual,
+        .hero-badge,
+        .story-text,
+        .products-header,
+        .things-header,
+        .why-visual,
+        .contact-strip .section-title,
+        .contact-strip .section-sub,
+        .product-card,
+        .thing-item {
+            animation: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ── HERO / BANNER ── #}
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <span class="hero-tag"><span class="symbol-sticker">✦</span> Now Open in Poblacion, San Jose</span>
+            <h1>Where Every Sip Feels Like <em>Home</em></h1>
+            <p class="hero-desc">Bins Cafe is your cozy escape — handcrafted coffee, fresh pastries, and a warm atmosphere that keeps you coming back for more.</p>
+            <div class="hero-actions">
+                <a href="{{ path('app_menu') }}" class="btn-accent">Explore Our Menu</a>
+                <a href="{{ path('app_about') }}" class="btn-outline">Our Story</a>
+            </div>
+            <div class="sticker-row">
+                <span class="sticker-chip"><span class="symbol-sticker">◎</span> Fresh Brew</span>
+                <span class="sticker-chip"><span class="symbol-sticker">◍</span> Cozy Vibes</span>
+                <span class="sticker-chip"><span class="symbol-sticker">✦</span> Daily Bakes</span>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-num">50+</div>
+                    <div class="hero-stat-label">Menu Items</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">5k+</div>
+                    <div class="hero-stat-label">Happy Guests</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">4.9★</div>
+                    <div class="hero-stat-label">Rating</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-badge">Since<br>2020</div>
+    </div>
+</section>
+
+{# ── OUR STORY ── #}
+<section class="story" id="story">
+    <div class="container story-inner">
+        <div class="story-visual">
+            <div class="story-img-box"><img src="/images/hero-coffee.jpg" alt="Barista brewing coffee in a cozy setting"></div>
+            <div class="story-card">
+                <div class="story-card-num">4+</div>
+                <div class="story-card-label">Years of brewing excellence</div>
+            </div>
+        </div>
+        <div class="story-text">
+            <p class="section-label">Our Story</p>
+            <h2 class="section-title"><span class="symbol-sticker">◉</span>Born from a Love of Good Coffee</h2>
+            <p class="section-sub">Bins Cafe started as a small dream — a place where neighbors become friends over a perfectly brewed cup. Today, we carry that same soul in everything we do.</p>
+            <div class="story-features">
+                <div class="story-feature">
+                    <div class="story-feature-dot"></div>
+                    <p><strong>Single-origin beans</strong> sourced directly from local farmers in the Philippine highlands.</p>
+                </div>
+                <div class="story-feature">
+                    <div class="story-feature-dot"></div>
+                    <p><strong>House-baked pastries</strong> made fresh every morning — no shortcuts, ever.</p>
+                </div>
+                <div class="story-feature">
+                    <div class="story-feature-dot"></div>
+                    <p><strong>Community first</strong> — our cafe is a space for creativity, connection, and calm.</p>
+                </div>
+            </div>
+            <div style="margin-top: 2.5rem;">
+                <a href="{{ path('app_about') }}" class="btn-primary">Read Our Full Story</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── PRODUCTS ── #}
+<section class="products" id="products">
+    <div class="container">
+        <div class="products-header">
+            <p class="section-label">Our Menu</p>
+            <h2 class="section-title"><span class="symbol-sticker">◌</span>Crafted Just for You</h2>
+            <p class="section-sub">From morning espressos to afternoon frappes — every item on our menu is made with intention and served with warmth.</p>
+        </div>
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-img"><img src="/images/homecards/product-latte.jpeg" alt="Bins Classic Latte"></div>
+                <div class="product-body">
+                    <p class="product-tag"><span class="symbol-sticker">◔</span>Signature</p>
+                    <h3 class="product-name"><span class="symbol-sticker">◎</span>Bins Classic Latte</h3>
+                    <p class="product-desc">Smooth espresso with velvety steamed milk. The drink that started it all.</p>
+                    <div class="product-footer">
+                        <span class="product-price">₱135</span>
+                        <a href="{{ path('app_menu') }}" class="product-btn">Order</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img alt1"><img src="/images/homecards/product-milktea.jpeg" alt="Brown Sugar Milk Tea"></div>
+                <div class="product-body">
+                    <p class="product-tag"><span class="symbol-sticker">◐</span>Popular</p>
+                    <h3 class="product-name"><span class="symbol-sticker">◍</span>Brown Sugar Milk Tea</h3>
+                    <p class="product-desc">Rich brown sugar syrup with fresh milk and chewy tapioca pearls.</p>
+                    <div class="product-footer">
+                        <span class="product-price">₱120</span>
+                        <a href="{{ path('app_menu') }}" class="product-btn">Order</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img alt2"><img src="/images/homecards/product-croissant.jpeg" alt="Butter Croissant"></div>
+                <div class="product-body">
+                    <p class="product-tag"><span class="symbol-sticker">✦</span>Freshly Baked</p>
+                    <h3 class="product-name"><span class="symbol-sticker">◈</span>Butter Croissant</h3>
+                    <p class="product-desc">Flaky, golden, and buttery — baked in-house every morning at 6am.</p>
+                    <div class="product-footer">
+                        <span class="product-price">₱85</span>
+                        <a href="{{ path('app_menu') }}" class="product-btn">Order</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img alt3"><img src="/images/homecards/product-matcha.jpeg" alt="Matcha Oat Latte"></div>
+                <div class="product-body">
+                    <p class="product-tag"><span class="symbol-sticker">◒</span>Specialty</p>
+                    <h3 class="product-name"><span class="symbol-sticker">◑</span>Matcha Oat Latte</h3>
+                    <p class="product-desc">Ceremonial-grade matcha blended with creamy oat milk. Plant-based perfection.</p>
+                    <div class="product-footer">
+                        <span class="product-price">₱150</span>
+                        <a href="{{ path('app_menu') }}" class="product-btn">Order</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img alt4"><img src="/images/homecards/product-cheesecake.jpeg" alt="Basque Cheesecake"></div>
+                <div class="product-body">
+                    <p class="product-tag"><span class="symbol-sticker">◌</span>Dessert</p>
+                    <h3 class="product-name"><span class="symbol-sticker">✦</span>Basque Cheesecake</h3>
+                    <p class="product-desc">Creamy, caramelized, and impossibly smooth. A slice of happiness.</p>
+                    <div class="product-footer">
+                        <span class="product-price">₱110</span>
+                        <a href="{{ path('app_menu') }}" class="product-btn">Order</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img alt5"><img src="/images/homecards/product-coldbrew.jpeg" alt="Mango Cold Brew"></div>
+                <div class="product-body">
+                    <p class="product-tag"><span class="symbol-sticker">◉</span>Refresher</p>
+                    <h3 class="product-name"><span class="symbol-sticker">◔</span>Mango Cold Brew</h3>
+                    <p class="product-desc">Cold brew coffee sweetened with fresh Philippine mango. Summer in a cup.</p>
+                    <div class="product-footer">
+                        <span class="product-price">₱145</span>
+                        <a href="{{ path('app_menu') }}" class="product-btn">Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top: 3rem;">
+            <a href="{{ path('app_menu') }}" class="btn-primary">View Full Menu</a>
+        </div>
+    </div>
+</section>
+
+{# ── OUR THINGS ── #}
+<section class="things" id="things">
+    <div class="container">
+        <div class="things-header">
+            <p class="section-label" style="color: var(--accent);">What We Offer</p>
+            <h2 class="section-title" style="color: var(--cream-light);"><span class="symbol-sticker">✦</span>Our Things</h2>
+            <p class="section-sub" style="color: var(--text-light); margin: 0 auto;">More than just coffee — we offer an experience worth returning to, every time.</p>
+        </div>
+        <div class="things-grid">
+            <div class="thing-item">
+                <img class="thing-photo" src="/images/homecards/thing-artisan.jpeg" alt="Artisan coffee beans and brew setup">
+                <div class="thing-icon"><span class="symbol-sticker">◉</span></div>
+                <h3 class="thing-title">Artisan Coffee</h3>
+                <p class="thing-desc">Single-origin beans roasted in small batches for peak flavor and freshness.</p>
+            </div>
+            <div class="thing-item">
+                <img class="thing-photo" src="/images/homecards/thing-pastry.jpeg" alt="Fresh pastry and coffee pairing">
+                <div class="thing-icon"><span class="symbol-sticker">◌</span></div>
+                <h3 class="thing-title">Fresh Pastries</h3>
+                <p class="thing-desc">Baked in-house every morning. No preservatives, just pure ingredients.</p>
+            </div>
+            <div class="thing-item">
+                <img class="thing-photo" src="/images/homecards/thing-cozy.jpeg" alt="Cozy cafe seating area">
+                <div class="thing-icon"><span class="symbol-sticker">◈</span></div>
+                <h3 class="thing-title">Cozy Space</h3>
+                <p class="thing-desc">Warm lighting, comfy seats, and free Wi-Fi — work or relax, your call.</p>
+            </div>
+            <div class="thing-item">
+                <img class="thing-photo" src="/images/homecards/thing-event.jpeg" alt="Private event setup at the cafe">
+                <div class="thing-icon"><span class="symbol-sticker">✦</span></div>
+                <h3 class="thing-title">Private Events</h3>
+                <p class="thing-desc">Reserve the cafe for birthdays, team meetups, or intimate gatherings.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── WHY CHOOSE US ── #}
+<section class="why" id="why">
+    <div class="container why-inner">
+        <div class="why-visual">
+            <div class="why-quote">
+                Bins Cafe isn't just a place to grab coffee — it's where I come to feel at peace.
+            </div>
+            <div class="why-author">
+                <div class="why-avatar">M</div>
+                <div class="why-author-info">
+                    <p>Maria Santos</p>
+                    <p>Regular Guest, Cebu City</p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <p class="section-label">Why Choose Us</p>
+            <h2 class="section-title"><span class="symbol-sticker">◈</span>The Bins Difference</h2>
+            <p class="section-sub" style="margin-bottom: 1.5rem;">We sweat the small stuff so you don't have to — every detail crafted for your comfort and joy.</p>
+            <div class="why-reasons">
+                <div class="why-reason">
+                    <div class="why-reason-num">01</div>
+                    <div>
+                        <h4>Quality You Can Taste</h4>
+                        <p>We source premium beans, use real ingredients, and never compromise on flavor. Your cup is worth it.</p>
+                    </div>
+                </div>
+                <div class="why-reason">
+                    <div class="why-reason-num">02</div>
+                    <div>
+                        <h4>Warm, Welcoming Team</h4>
+                        <p>Our baristas aren't just skilled — they're genuinely happy to see you. Every visit feels personal.</p>
+                    </div>
+                </div>
+                <div class="why-reason">
+                    <div class="why-reason-num">03</div>
+                    <div>
+                        <h4>Fair Prices, Big Flavors</h4>
+                        <p>Great coffee doesn't have to be expensive. We keep our prices honest and our portions generous.</p>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 2.5rem;">
+                <a href="{{ path('app_contact') }}" class="btn-primary">Visit Us Today</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── CONTACT US STRIP ── #}
+<section class="contact-strip" id="contact">
+    <p class="section-label" style="color: var(--accent);">Get In Touch</p>
+    <h2 class="section-title"><span class="symbol-sticker">◷</span>We'd Love to Hear From You</h2>
+    <p class="section-sub">Have a question, a feedback, or just want to say hi? Reach out — we reply fast.</p>
+    <div class="contact-strip-actions">
+        <a href="{{ path('app_contact') }}" class="btn-accent">Contact Us</a>
+        <a href="mailto:hello@binscafe.com" class="btn-outline">hello@binscafe.com</a>
+    </div>
+</section>
+<div class="contact-info-grid">
+    <div class="contact-info-card">
+        <div class="contact-info-icon"><span class="symbol-sticker">⌖</span></div>
+        <p class="contact-info-label">Location</p>
+        <p class="contact-info-value">123 Brew Street<br>Cebu City, Philippines</p>
+    </div>
+    <div class="contact-info-card">
+        <div class="contact-info-icon"><span class="symbol-sticker">◷</span></div>
+        <p class="contact-info-label">Hours</p>
+        <p class="contact-info-value">Mon–Fri: 7am – 9pm<br>Sat–Sun: 8am – 10pm</p>
+    </div>
+    <div class="contact-info-card">
+        <div class="contact-info-icon"><span class="symbol-sticker">☎</span></div>
+        <p class="contact-info-label">Contact</p>
+        <p class="contact-info-value">+63 912 345 6789<br>hello@binscafe.com</p>
+    </div>
+</div>
+
+{% endblock %}

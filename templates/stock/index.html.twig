@@ -133,10 +133,24 @@
         padding: 40px;
         color: #95a5a6;
     }
+
+    .symbol-sticker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.4em;
+        height: 1.4em;
+        border-radius: 999px;
+        background: #6d4c41;
+        color: #fff;
+        margin-right: 0.45rem;
+        font-size: 0.8em;
+        vertical-align: middle;
+    }
 </style>
 
 <div class="page-header">
-    <h1>📦 Stock Management</h1>
+    <h1><span class="symbol-sticker">◧</span>Stock Management</h1>
     <a href="{{ path('app_dashboard_stock_new') }}" class="btn btn-primary">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

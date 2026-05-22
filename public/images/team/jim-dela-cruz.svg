@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Portrait of Jim dela Cruz">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f1dcc6"/>
+      <stop offset="100%" stop-color="#d3b08e"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <circle cx="400" cy="330" r="170" fill="#f2caa5"/>
+  <path d="M240 330c0-110 74-190 160-190 84 0 160 78 160 188-28-28-64-42-108-42-58 0-114 24-212 44Z" fill="#2f1d17"/>
+  <rect x="250" y="520" width="300" height="220" rx="46" fill="#3d241a"/>
+  <circle cx="340" cy="338" r="10" fill="#3b2418"/>
+  <circle cx="460" cy="338" r="10" fill="#3b2418"/>
+  <path d="M346 430c34 28 74 28 108 0" fill="none" stroke="#8a5637" stroke-width="10" stroke-linecap="round"/>
+  <path d="M280 286c38-40 80-56 128-52 44 4 82 18 116 48" fill="none" stroke="#231510" stroke-width="16" stroke-linecap="round"/>
+</svg>

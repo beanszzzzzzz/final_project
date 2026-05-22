@@ -1,19 +1,381 @@
 {% extends 'base.html.twig' %}
+{% block title %}Register - Bins Cafe{% endblock %}
 
-{% block title %}Register{% endblock %}
+{% block stylesheets %}
+<style>
+    @keyframes authFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 8% 16%, rgba(238, 186, 138, 0.22), transparent 32%),
+            radial-gradient(circle at 91% 84%, rgba(112, 76, 52, 0.3), transparent 36%),
+            linear-gradient(135deg, #211410 0%, #2e1d18 48%, #422c20 100%);
+    }
+
+    .register-wrapper {
+        min-height: calc(100vh - 68px);
+        display: grid;
+        grid-template-columns: 1.08fr 1fr;
+        align-items: stretch;
+    }
+
+    .register-showcase {
+        padding: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-showcase::before {
+        content: '';
+        position: absolute;
+        top: 10%;
+        right: 8%;
+        width: 320px;
+        height: 320px;
+        border-radius: 999px;
+        border: 1px dashed rgba(255, 229, 200, 0.2);
+    }
+
+    .showcase-card {
+        width: min(94%, 570px);
+        border-radius: 22px;
+        padding: 2.2rem;
+        border: 1px solid rgba(255, 234, 213, 0.16);
+        background: linear-gradient(180deg, rgba(255, 246, 236, 0.1) 0%, rgba(255, 246, 236, 0.04) 100%);
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
+        color: #f6e2ce;
+        animation: authFadeUp 0.45s ease-out both;
+    }
+
+    .showcase-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.66rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #f0d2b4;
+        border: 1px solid rgba(255, 224, 192, 0.38);
+        border-radius: 999px;
+        padding: 0.26rem 0.62rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .showcase-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        color: #fff5e8;
+        margin-bottom: 0.6rem;
+        letter-spacing: 0.02em;
+    }
+
+    .showcase-title span { color: #f1bb86; }
+
+    .showcase-sub {
+        font-size: 0.86rem;
+        color: #dab99a;
+        letter-spacing: 0.12em;
+        margin-bottom: 1.2rem;
+        text-transform: uppercase;
+    }
+
+    .showcase-copy {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.04rem;
+        color: #f0dfcf;
+        line-height: 1.7;
+        margin-bottom: 1.2rem;
+    }
+
+    .showcase-points {
+        list-style: none;
+        margin: 0 0 1.2rem;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+    }
+
+    .showcase-points li {
+        border: 1px solid rgba(255, 228, 201, 0.24);
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 0.58rem 0.68rem;
+        color: #f6e8d8;
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .showcase-visual {
+        margin-top: 1.1rem;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 233, 210, 0.25);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .showcase-visual img {
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+        display: block;
+        filter: saturate(1.05) contrast(1.03);
+    }
+
+    .register-panel {
+        background: linear-gradient(180deg, #fdf7f0 0%, #f8eee3 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.2rem;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 440px;
+        background: var(--white);
+        border: 1px solid #ecd7c2;
+        border-radius: 18px;
+        box-shadow: 0 14px 28px rgba(69, 39, 24, 0.14);
+        padding: 2rem 1.9rem;
+        animation: authFadeUp 0.45s ease-out 0.08s both;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .register-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 30px rgba(69, 39, 24, 0.16);
+    }
+
+    .register-top { display: flex; align-items: center; margin-bottom: 0.95rem; }
+
+    .register-badge {
+        font-size: 0.64rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #9b6237;
+        border: 1px solid #e5ccb3;
+        border-radius: 999px;
+        padding: 0.24rem 0.6rem;
+        background: #fff5e8;
+        font-weight: 700;
+    }
+
+    .register-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #3d271a;
+        margin-bottom: 0.35rem;
+    }
+
+    .register-sub {
+        font-size: 0.88rem;
+        color: #7a5a45;
+        margin-bottom: 1.35rem;
+    }
+
+    .register-form { display: flex; flex-direction: column; gap: 0; }
+    .register-form > div { margin-bottom: 1.1rem; }
+
+    .register-form label {
+        display: block;
+        margin-bottom: 0.45rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #4b2f20;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+    }
+
+    .register-form .register-input {
+        width: 100%;
+        display: block;
+        box-sizing: border-box;
+        padding: 0.88rem 0.95rem;
+        border: 1px solid #e2cdb8;
+        border-radius: 10px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.94rem;
+        color: #3b271d;
+        background: #fffdfb;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .register-form input:focus { border-color: #bf8458; box-shadow: 0 0 0 3px rgba(191, 132, 88, 0.15); background: #ffffff; }
+
+    .register-form .form-error-message,
+    .register-form ul {
+        color: #8b2020;
+        font-size: 0.82rem;
+        margin: 0.35rem 0 0;
+        padding-left: 1rem;
+    }
+
+    .agree-wrap {
+        margin-bottom: 1.1rem;
+    }
+
+    .agree-wrap label {
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #7a5a45;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin: 0;
+        padding: 0;
+    }
+
+    .agree-wrap input[type="checkbox"] { accent-color: #5d3824; }
+
+    .btn-register {
+        width: 100%;
+        padding: 0.95rem;
+        background: linear-gradient(120deg, #4f2f20 0%, #764b31 100%);
+        color: var(--cream-light);
+        border: none;
+        border-radius: 10px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.94rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: transform 0.18s, box-shadow 0.2s;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 9px 18px rgba(58, 31, 24, 0.24);
+    }
+
+    .btn-register:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(58, 31, 24, 0.3); }
+
+    .register-footer { text-align: center; margin-top: 1.15rem; font-size: 0.86rem; color: var(--text-mid); }
+    .register-footer a { color: var(--accent); text-decoration: none; font-weight: 700; }
+    .register-footer a:hover { color: var(--brown-mid); }
+
+    .alert-error { background: #fde8e8; border: 1px solid #f5c0c0; color: #8b2020; padding: 0.8rem 0.95rem; border-radius: 10px; font-size: 0.86rem; margin-bottom: 1rem; }
+
+    .register-links {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        flex-wrap: wrap;
+        margin-top: 0.2rem;
+        font-size: 0.84rem;
+    }
+
+    .register-links a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 700;
+        transition: color 0.2s;
+    }
+
+    .register-links a + a::before {
+        content: '\00A0\2022\00A0';
+        color: #c6a489;
+        font-weight: 400;
+    }
+
+    .register-links a:hover { color: var(--brown-mid); }
+
+    @media (max-width: 980px) {
+        .register-wrapper { grid-template-columns: 1fr; }
+        .register-showcase { display: none; }
+        .register-panel { padding: 1.6rem 1rem; background: transparent; }
+        .register-card { max-width: 470px; }
+    }
+
+    @media (max-width: 640px) {
+        .register-card { padding: 1.6rem 1.2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .showcase-card,
+        .register-card {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .register-card:hover {
+            transform: none;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+<div class="register-wrapper">
+    <div class="register-showcase">
+        <div class="showcase-card">
+            <span class="showcase-badge">New Member Access</span>
+            <h2 class="showcase-title">Bins <span>Cafe</span></h2>
+            <p class="showcase-sub">Roast and Ritual</p>
+            <p class="showcase-copy">Create your account to unlock a faster checkout, saved favorites, and member-only cafe updates.</p>
+            <ul class="showcase-points">
+                <li>Save your favorite menu picks</li>
+                <li>Track your latest orders quickly</li>
+                <li>Get special cafe member promos</li>
+                <li>Checkout in just a few taps</li>
+            </ul>
+            <div class="showcase-visual">
+                <img src="/images/hero-coffee.jpg" alt="Freshly brewed coffee at Bins Cafe">
+            </div>
+        </div>
+    </div>
 
-    {{ form_errors(registrationForm) }}
+    <div class="register-panel">
+        <div class="register-card">
+            <div class="register-top">
+                <span class="register-badge">Create Account</span>
+            </div>
+            <h1 class="register-title">Create your account</h1>
+            <p class="register-sub">Sign up to join Bins Cafe and start ordering.</p>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+            {% if form_errors(registrationForm) %}
+                <div class="alert-error">{{ form_errors(registrationForm) }}</div>
+            {% endif %}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+            {{ form_start(registrationForm, {'attr': {'class': 'register-form'}}) }}
+                <div>
+                    {{ form_label(registrationForm.email, 'Email Address') }}
+                    {{ form_widget(registrationForm.email, {'attr': {'placeholder': 'you@example.com', 'class': 'register-input'}}) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div>
+                    {{ form_label(registrationForm.plainPassword, 'Password') }}
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'placeholder': 'Choose a password', 'class': 'register-input'}}) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+
+                <div class="agree-wrap">
+                    {{ form_row(registrationForm.agreeTerms) }}
+                </div>
+
+                <button type="submit" class="btn-register">Create Account</button>
+            {{ form_end(registrationForm) }}
+
+            <div class="register-footer">
+                Already have an account? <a href="{{ path('app_login') }}">Sign in</a>
+            </div>
+            <div class="register-links">
+                <a href="{{ path('app_home') }}">Back to Home</a>
+                <a href="{{ path('app_about') }}">About Bins Cafe</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

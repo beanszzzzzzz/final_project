@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 #[AsEventListener(event: LoginSuccessEvent::class)]
-class LoginSuccessListener
+class LoginListener
 {
     private ActivityLoggerService $activityLogger;
     private EntityManagerInterface $entityManager;

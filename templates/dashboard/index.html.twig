@@ -1,528 +1,655 @@
 ﻿{% extends 'base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Command Center - Dashboard{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .main-content.with-sidebar {
+        background:
+            radial-gradient(circle at 6% 8%, rgba(255, 161, 90, 0.2), transparent 28%),
+            radial-gradient(circle at 92% 88%, rgba(83, 135, 116, 0.18), transparent 33%),
+            linear-gradient(145deg, #f1ede8 0%, #e9e1d8 100%) !important;
+        padding: 24px;
+    }
+
+    .ops-dashboard {
+        --ink: #2a1f1c;
+        --muted: #68524a;
+        --panel: #fffaf5;
+        --line: #e8d8c8;
+        --accent: #b56635;
+        --accent-dark: #7f3f1d;
+        --ok: #267f5a;
+        --warn: #bc6a12;
+        --danger: #a2372e;
+    }
+
+    .reveal-up {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: revealUp 0.5s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.06s; }
+    .delay-2 { animation-delay: 0.14s; }
+    .delay-3 { animation-delay: 0.22s; }
+
+    @keyframes revealUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero {
+        position: relative;
+        border-radius: 22px;
+        border: 1px solid #4a2f21;
+        overflow: hidden;
+        margin-bottom: 20px;
+        background:
+            radial-gradient(circle at 86% 20%, rgba(255, 210, 165, 0.3), transparent 35%),
+            linear-gradient(130deg, #2e201b 0%, #4a2f21 48%, #1f1a17 100%);
+        color: #fff6ec;
+        box-shadow: 0 18px 34px rgba(47, 30, 23, 0.23);
+    }
+
+    .hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(transparent 93%, rgba(255,255,255,0.04) 93%);
+        background-size: 100% 28px;
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1.55fr 1fr;
+        gap: 20px;
+        padding: 24px;
+        align-items: end;
+    }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border: 1px solid rgba(255, 232, 205, 0.4);
+        background: rgba(255, 240, 219, 0.09);
+        color: #ffd7aa;
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 10px;
+    }
+
+    .hero h1 {
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.45rem, 2.2vw, 2.35rem);
+        line-height: 1.15;
+    }
+
+    .hero p {
+        margin: 9px 0 0;
+        color: #e8d4c3;
+        font-size: 0.93rem;
+    }
+
+    .hero-user {
+        justify-self: end;
+        text-align: right;
+        display: grid;
+        gap: 8px;
+    }
+
+    .hero-user .badge {
+        justify-self: end;
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #ffe0b8;
+        border: 1px solid rgba(255, 228, 196, 0.38);
+        border-radius: 999px;
+        padding: 0.24rem 0.56rem;
+    }
+
+    .hero-user strong {
+        font-size: 0.95rem;
+        color: #fff7ed;
+        word-break: break-all;
+    }
+
+    .hero-user .mini {
+        color: #ddb99a;
+        font-size: 0.8rem;
+    }
+
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .kpi {
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, #fffdf9 0%, var(--panel) 100%);
+        padding: 14px;
+        box-shadow: 0 8px 18px rgba(89, 53, 33, 0.09);
+    }
+
+    .kpi-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+    }
+
+    .kpi-value {
+        color: var(--ink);
+        font-size: clamp(1.2rem, 2vw, 1.9rem);
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .kpi-note {
+        color: var(--muted);
+        font-size: 0.8rem;
+    }
+
+    .kpi-note.positive { color: var(--ok); font-weight: 700; }
+    .kpi-note.negative { color: var(--danger); font-weight: 700; }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1.65fr 1fr;
+        gap: 16px;
+    }
+
+    .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #fffdf9;
+        padding: 16px;
+        box-shadow: 0 10px 22px rgba(76, 44, 28, 0.08);
+    }
+
+    .panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+    .panel-head h3 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .panel-head a {
+        text-decoration: none;
+        font-size: 0.78rem;
+        color: var(--accent-dark);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .panel-head a:hover {
+        color: var(--accent);
+    }
+
+    .sales-wrap {
+        min-height: 280px;
+    }
+
+    .stock-health {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
+        gap: 10px;
+    }
+
+    .health-pill {
+        border: 1px solid #efddcc;
+        border-radius: 12px;
+        padding: 10px;
+        background: #fffbf6;
+    }
+
+    .health-pill .name {
+        font-size: 0.73rem;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #7b6459;
+    }
+
+    .health-pill .value {
+        margin-top: 5px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .health-pill.warning .value { color: var(--warn); }
+    .health-pill.danger .value { color: var(--danger); }
+
+    .product-list,
+    .order-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .list-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        border: 1px solid #efdecc;
+        background: #fff9f2;
+        border-radius: 12px;
+        padding: 11px;
+        text-decoration: none;
+    }
+
+    .list-item:hover {
+        transform: translateX(2px);
+        transition: transform 0.2s ease;
+    }
+
+    .list-title {
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 0.92rem;
+    }
+
+    .list-sub {
+        color: #7d6458;
+        font-size: 0.8rem;
+        margin-top: 3px;
+    }
+
+    .list-value {
+        color: var(--accent-dark);
+        font-weight: 800;
+        font-size: 0.87rem;
+        align-self: center;
+    }
+
+    .stock-table-wrap {
+        overflow-x: auto;
+    }
+
+    .stock-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+    }
+
+    .stock-table th {
+        text-align: left;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #7c665b;
+        padding: 10px;
+        border-bottom: 1px solid #eddaca;
+    }
+
+    .stock-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #f2e5d8;
+        color: #3a2922;
+        font-size: 0.88rem;
+    }
+
+    .status-chip {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.24rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .status-chip.low {
+        background: #fff1de;
+        color: #a96210;
+    }
+
+    .status-chip.out {
+        background: #ffe5e2;
+        color: #9f2c22;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #735f55;
+        padding: 18px;
+        border: 1px dashed #dec6b2;
+        border-radius: 12px;
+        background: #fff8f2;
+    }
+
+    @media (max-width: 1150px) {
+        .kpi-grid {
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+        }
+
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-content {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-user {
+            justify-self: start;
+            text-align: left;
+        }
+
+        .hero-user .badge {
+            justify-self: start;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .main-content.with-sidebar {
+            padding: 14px;
+        }
+
+        .kpi-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stock-health {
+            grid-template-columns: 1fr;
+        }
+
+        .panel {
+            padding: 13px;
+            border-radius: 14px;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-    <style>
-        .main-content {
-            background: #f5f1ee !important;
-        }
+{% set roleLabel = is_granted('ROLE_ADMIN') ? 'Administrator' : (is_granted('ROLE_STAFF') ? 'Staff Operator' : 'User') %}
+{% set dashboardTitle = is_granted('ROLE_ADMIN') ? 'Admin Command Center' : (is_granted('ROLE_STAFF') ? 'Staff Command Center' : 'Command Center') %}
+{% set dashboardSubtitle = is_granted('ROLE_STAFF') ? 'Monitor daily operations, stock status, and customer activity from one streamlined workspace.' : 'Track revenue momentum, inventory pressure, and customer growth in one focused view.' %}
 
-        .modern-dashboard-content {
-            padding: 0;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 25px 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        }
-
-        .dashboard-header h1 {
-            color: #5d4037;
-            margin: 0;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .dashboard-subtitle {
-            color: #8d6e63;
-            margin: 5px 0 0 0;
-            font-size: 14px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-profile-text {
-            text-align: right;
-        }
-
-        .user-role {
-            font-size: 12px;
-            color: #8d6e63;
-        }
-
-        .user-name {
-            font-size: 14px;
-            color: #5d4037;
-            font-weight: 600;
-        }
-
-        .avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(93, 64, 55, 0.12);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(141, 110, 99, 0.1);
-        }
-
-        .stat-content {
-            flex: 1;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #8d6e63;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #5d4037;
-            margin-bottom: 5px;
-        }
-
-        .stat-change {
-            font-size: 12px;
-            font-weight: 600;
-            color: #4caf50;
-        }
-
-        .stat-change.negative {
-            color: #f44336;
-        }
-
-        .stat-change.positive {
-            color: #4caf50;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .chart-card,
-        .trending-card,
-        .recent-orders-card {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .card-header h3 {
-            margin: 0;
-            font-size: 18px;
-            color: #5d4037;
-            font-weight: 600;
-        }
-
-        .card-header a {
-            color: #8d6e63;
-            font-size: 14px;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .card-header a:hover {
-            color: #6d4c41;
-        }
-
-        .chart-placeholder {
-            padding: 20px 0;
-        }
-
-        .quick-links {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .quick-link {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: #f8f5f2;
-            border-radius: 12px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .quick-link:hover {
-            background: #f0e8e3;
-            transform: translateX(5px);
-        }
-
-        .quick-link-icon {
-            width: 45px;
-            height: 45px;
-            background: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6d4c41;
-        }
-
-        .quick-link-icon svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .quick-link-content {
-            flex: 1;
-        }
-
-        .quick-link-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #5d4037;
-            margin-bottom: 3px;
-        }
-
-        .quick-link-subtitle {
-            font-size: 12px;
-            color: #8d6e63;
-        }
-
-        .no-data {
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        @media (max-width: 1024px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-        }
-    </style>
-
-    <div class="modern-dashboard-content">
-        <div class="dashboard-header">
+<div class="ops-dashboard">
+    <section class="hero reveal-up">
+        <div class="hero-content">
             <div>
-                <h1>Welcome to Bins Cafe</h1>
-                <p class="dashboard-subtitle">Choose The Category</p>
+                <span class="hero-eyebrow">Bins Cafe Operations</span>
+                <h1>{{ dashboardTitle }}</h1>
+                <p>{{ dashboardSubtitle }}</p>
             </div>
-            <div class="user-profile">
-                <div class="user-profile-text">
-                    <div class="user-role">
-                        {% if is_granted('ROLE_ADMIN') %}
-                            Administrator
-                        {% elseif is_granted('ROLE_STAFF') %}
-                            Staff
-                        {% elseif is_granted('ROLE_USER') %}
-                            User
-                        {% else %}
-                            Guest
-                        {% endif %}
-                    </div>
-                    <div class="user-name">{{ app.user.email }}</div>
-                </div>
-                <div class="avatar">
-                    <svg fill="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
-                </div>
+            <div class="hero-user">
+                <span class="badge">{{ roleLabel }}</span>
+                <strong>{{ app.user.email }}</strong>
+                <span class="mini">{{ "now"|date("l, M d, Y") }}</span>
             </div>
         </div>
+    </section>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg fill="none" stroke="#6d4c41" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-label">Total Products</div>
-                    <div class="stat-value">{{ totalProducts }}</div>
-                    <div class="stat-change">Products in system</div>
-                </div>
+    <section class="kpi-grid reveal-up delay-1">
+        <article class="kpi">
+            <div class="kpi-top">
+                <span>Total Revenue</span>
+                <span>7D Lens</span>
             </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg fill="none" stroke="#6d4c41" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-label">Stock Items</div>
-                    <div class="stat-value">{{ totalStocks }}</div>
-                    <div class="stat-change">Items in inventory</div>
-                </div>
+            <div class="kpi-value">P{{ totalRevenue|number_format(2) }}</div>
+            <div class="kpi-note {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}">
+                {% if revenueChange >= 0 %}+{% endif %}{{ revenueChange|number_format(1) }}% vs yesterday
             </div>
+        </article>
 
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg fill="none" stroke="#6d4c41" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-label">Total Revenue</div>
-                    <div class="stat-value">₱{{ totalRevenue|number_format(2) }}</div>
-                    <div class="stat-change {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}">
-                        {% if revenueChange >= 0 %}+{% endif %}{{ revenueChange|number_format(1) }}% from yesterday
-                    </div>
-                </div>
+        <article class="kpi">
+            <div class="kpi-top">
+                <span>Products</span>
+                <span>Catalog</span>
             </div>
-        </div>
+            <div class="kpi-value">{{ totalProducts }}</div>
+            <div class="kpi-note">Distinct items currently listed</div>
+        </article>
 
-        <div class="content-grid">
-            <div class="chart-card">
-                <div class="card-header">
-                    <h3>Sales Analytics (Last 7 Days)</h3>
-                    <a href="#">See all</a>
-                </div>
-                <div class="chart-placeholder">
-                    {% if salesData is not empty %}
-                        <div style="padding: 20px;">
-                            <canvas id="salesChart" style="width: 100%; height: 250px;"></canvas>
-                        </div>
-                    {% else %}
-                        <svg viewBox="0 0 400 200" style="width: 100%; height: 200px;">
-                            <path d="M 0 150 Q 50 120 100 140 T 200 100 T 300 130 T 400 90" 
-                                  fill="none" 
-                                  stroke="#8d6e63" 
-                                  stroke-width="2"
-                                  opacity="0.6"/>
-                            <path d="M 0 150 Q 50 120 100 140 T 200 100 T 300 130 T 400 90 L 400 200 L 0 200 Z" 
-                                  fill="url(#gradient)" 
-                                  opacity="0.2"/>
-                            <defs>
-                                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#8d6e63;stop-opacity:0.3" />
-                                    <stop offset="100%" style="stop-color:#8d6e63;stop-opacity:0" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                        <p style="text-align: center; color: #95a5a6; margin-top: 20px;">No sales data available yet</p>
-                    {% endif %}
-                </div>
+        <article class="kpi">
+            <div class="kpi-top">
+                <span>Stock Entries</span>
+                <span>Inventory</span>
             </div>
+            <div class="kpi-value">{{ totalStocks }}</div>
+            <div class="kpi-note">Tracked batches and quantity records</div>
+        </article>
 
-            <div class="trending-card">
-                <div class="card-header">
-                    <h3>Recent Products</h3>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_dashboard_products') }}">See all</a>
-                    {% endif %}
-                </div>
-                <div class="quick-links">
-                    {% if recentProducts is empty %}
-                        <div style="text-align: center; padding: 20px; color: #95a5a6;">
-                            <p>No products added yet</p>
-                        </div>
-                    {% else %}
-                        {% for product in recentProducts %}
-                            <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="quick-link">
-                                <div class="quick-link-icon">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                                    </svg>
-                                </div>
-                                <div class="quick-link-content">
-                                    <div class="quick-link-title">{{ product.name }}</div>
-                                    <div class="quick-link-subtitle">₱{{ product.price }}</div>
-                                </div>
-                            </a>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+        <article class="kpi">
+            <div class="kpi-top">
+                <span>Customers</span>
+                <span>Audience</span>
             </div>
-        </div>
+            <div class="kpi-value">{{ totalCustomers }}</div>
+            <div class="kpi-note">Registered customer profiles</div>
+        </article>
+    </section>
 
-        <div class="recent-orders-card">
-            <div class="card-header">
-                <h3>Low Stock Alert</h3>
+    <section class="main-grid reveal-up delay-2">
+        <article class="panel">
+            <div class="panel-head">
+                <h3>Sales Trajectory - Last 7 Days</h3>
                 {% if is_granted('ROLE_STAFF') %}
-                    <a href="{{ path('app_dashboard_stocks') }}">See all</a>
+                    <a href="{{ path('app_order_index') }}">View Orders</a>
                 {% endif %}
             </div>
-            {% if lowStockItems is empty %}
-                <div class="no-data">
-                    <svg fill="none" stroke="#4caf50" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <p style="color: #4caf50; text-align: center;">All stock levels are good!</p>
-                    <p style="color: #bdc3c7; text-align: center; font-size: 14px; margin-top: 5px;">No items need restocking at this time.</p>
+
+            <div class="sales-wrap">
+                {% if salesData is not empty %}
+                    <canvas id="salesChart"></canvas>
+                {% else %}
+                    <div class="empty-state">No sales data available yet. New orders will appear here.</div>
+                {% endif %}
+            </div>
+
+            <div class="stock-health">
+                <div class="health-pill">
+                    <div class="name">Today Orders</div>
+                    <div class="value">{{ todayOrdersCount }}</div>
                 </div>
-            {% else %}
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid #f0f0f0;">
-                                <th style="padding: 12px; text-align: left; color: #8d6e63; font-size: 13px; font-weight: 600;">Product</th>
-                                <th style="padding: 12px; text-align: center; color: #8d6e63; font-size: 13px; font-weight: 600;">Current Qty</th>
-                                <th style="padding: 12px; text-align: center; color: #8d6e63; font-size: 13px; font-weight: 600;">Reorder Level</th>
-                                <th style="padding: 12px; text-align: center; color: #8d6e63; font-size: 13px; font-weight: 600;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for stock in lowStockItems %}
-                                <tr style="border-bottom: 1px solid #f8f8f8;">
-                                    <td style="padding: 15px;">
-                                        <div style="font-weight: 600; color: #5d4037;">{{ stock.product.name }}</div>
-                                    </td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 600; color: #5d4037;">{{ stock.quantity }}</td>
-                                    <td style="padding: 15px; text-align: center; color: #666;">{{ stock.reorderLevel }}</td>
-                                    <td style="padding: 15px; text-align: center;">
-                                        {% if stock.quantity == 0 %}
-                                            <span style="padding: 6px 12px; background: #ffebee; color: #c62828; border-radius: 20px; font-size: 12px; font-weight: 600;">Out of Stock</span>
-                                        {% else %}
-                                            <span style="padding: 6px 12px; background: #fff3e0; color: #f57c00; border-radius: 20px; font-size: 12px; font-weight: 600;">Low Stock</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="health-pill warning">
+                    <div class="name">Low Stock Items</div>
+                    <div class="value">{{ stockSummary.lowStockCount }}</div>
                 </div>
+                <div class="health-pill danger">
+                    <div class="name">Out Of Stock</div>
+                    <div class="value">{{ stockSummary.outOfStockCount }}</div>
+                </div>
+            </div>
+        </article>
+
+        <article class="panel">
+            <div class="panel-head">
+                <h3>Fresh Products</h3>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_dashboard_products') }}">Manage</a>
+                {% endif %}
+            </div>
+
+            <div class="product-list">
+                {% if recentProducts is empty %}
+                    <div class="empty-state">No products added yet.</div>
+                {% else %}
+                    {% for product in recentProducts %}
+                        <a class="list-item" href="{{ path('app_dashboard_product_show', {'id': product.id}) }}">
+                            <div>
+                                <div class="list-title">{{ product.name }}</div>
+                                <div class="list-sub">{{ product.category }}</div>
+                            </div>
+                            <div class="list-value">P{{ product.price|number_format(2) }}</div>
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="panel-head" style="margin-top: 16px; margin-bottom: 10px;">
+                <h3>Latest Orders</h3>
+                {% if is_granted('ROLE_STAFF') %}
+                    <a href="{{ path('app_order_index') }}">All</a>
+                {% endif %}
+            </div>
+
+            <div class="order-list">
+                {% if recentOrders is empty %}
+                    <div class="empty-state">No recent orders yet.</div>
+                {% else %}
+                    {% for order in recentOrders|slice(0, 4) %}
+                        <div class="list-item">
+                            <div>
+                                <div class="list-title">#{{ order.orderNumber }}</div>
+                                <div class="list-sub">{{ order.customer.name }} - {{ order.createdAt|date('M d, Y H:i') }}</div>
+                            </div>
+                            <div class="list-value">P{{ order.total|number_format(2) }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
+    <section class="panel reveal-up delay-3">
+        <div class="panel-head">
+            <h3>Inventory Alerts</h3>
+            {% if is_granted('ROLE_STAFF') %}
+                <a href="{{ path('app_dashboard_stocks') }}">Open Stocks</a>
             {% endif %}
         </div>
-    </div>
 
-    {% if salesData is not empty %}
+        {% if lowStockItems is empty %}
+            <div class="empty-state">Great news. All stock levels are currently healthy.</div>
+        {% else %}
+            <div class="stock-table-wrap">
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Current Qty</th>
+                            <th>Reorder Level</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in lowStockItems %}
+                            <tr>
+                                <td>{{ stock.product.name }}</td>
+                                <td>{{ stock.quantity }}</td>
+                                <td>{{ stock.reorderLevel }}</td>
+                                <td>
+                                    {% if stock.quantity == 0 %}
+                                        <span class="status-chip out">Out of Stock</span>
+                                    {% else %}
+                                        <span class="status-chip low">Low Stock</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+{% if salesData is not empty %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-(function() {
-    try {
-        const ctx = document.getElementById('salesChart');
-        if (!ctx) {
-            console.error('Canvas element #salesChart not found');
-            return;
-        }
-        
-        const rawData = {{ salesData|json_encode|raw }};
-        
-        if (!Array.isArray(rawData) || rawData.length === 0) {
-            console.warn('No sales data available');
-            return;
-        }
-        
-        const labels = [];
-        const data = [];
-        
-        rawData.forEach((item, index) => {
-            labels.push(item.day || 'Day ' + (index + 1));
-            data.push(parseFloat(item.total) || 0);
-        });
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Daily Sales (₱)',
-                    data: data,
-                    borderColor: '#8d6e63',
-                    backgroundColor: 'rgba(141, 110, 99, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#6d4c41',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return '₱' + context.parsed.y.toLocaleString('en-US', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
-                            }
-                        }
+(function () {
+    const chartElement = document.getElementById('salesChart');
+    if (!chartElement || typeof Chart === 'undefined') {
+        return;
+    }
+
+    const rawData = {{ salesData|json_encode|raw }};
+    if (!Array.isArray(rawData) || rawData.length === 0) {
+        return;
+    }
+
+    const labels = rawData.map((item, index) => item.day || ('Day ' + (index + 1)));
+    const values = rawData.map((item) => parseFloat(item.total) || 0);
+
+    new Chart(chartElement, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sales (PHP)',
+                data: values,
+                borderColor: '#9b5328',
+                backgroundColor: 'rgba(181, 102, 53, 0.14)',
+                fill: true,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                borderWidth: 3,
+                tension: 0.34
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#59453d',
+                        boxWidth: 18,
+                        boxHeight: 8
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '₱' + value.toLocaleString();
-                            }
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return 'P' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#725a4d' }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#725a4d',
+                        callback: function (value) {
+                            return 'P' + value.toLocaleString();
                         }
                     },
-                    x: {
-                        grid: { display: false }
+                    grid: {
+                        color: 'rgba(114, 90, 77, 0.15)'
                     }
                 }
             }
-        });
-    } catch (error) {
-        console.error('Error creating chart:', error);
-    }
+        }
+    });
 })();
 </script>
 {% endif %}

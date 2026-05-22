@@ -3,13 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Entity\Stock;
 use App\Form\ProductType;
-use App\Form\StockType;
 use App\Repository\ProductRepository;
 use App\Repository\StockRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\OrderRepository;
+use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +19,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/dashboard')]
 final class DashboardController extends AbstractController
 {
+    public function __construct(private ActivityLoggerService $activityLogger)
+    {
+    }
+
     #[IsGranted('ROLE_STAFF')]
     #[Route(name: 'app_dashboard_index', methods: ['GET'])]
     public function index(
@@ -110,6 +113,12 @@ final class DashboardController extends AbstractController
             $entityManager->persist($product);
             $entityManager->flush();
 
+            $this->activityLogger->logCreate(
+                'Product',
+                (int) $product->getId(),
+                (string) $product->getName()
+            );
+
             return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -138,6 +147,12 @@ final class DashboardController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->activityLogger->logUpdate(
+                'Product',
+                (int) $product->getId(),
+                (string) $product->getName()
+            );
+
             return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -147,61 +162,4 @@ final class DashboardController extends AbstractController
         ]);
     }
 
-    #[IsGranted('ROLE_STAFF')]
-    #[Route('/stocks', name: 'app_dashboard_stocks', methods: ['GET'])]
-    public function stocks(StockRepository $stockRepository): Response
-    {
-        return $this->render('stock/index.html.twig', [
-            'stocks' => $stockRepository->findAll(),
-        ]);
-    }
-
-    #[IsGranted('ROLE_STAFF')]
-    #[Route('/stocks/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
-    public function newStock(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $stock = new Stock();
-        $form = $this->createForm(StockType::class, $stock);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($stock);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('stock/new.html.twig', [
-            'stock' => $stock,
-            'form' => $form,
-        ]);
-    }
-
-    #[IsGranted('ROLE_STAFF')]
-    #[Route('/stocks/{id}', name: 'app_dashboard_stock_show', methods: ['GET'])]
-    public function showStock(Stock $stock): Response
-    {
-        return $this->render('stock/show.html.twig', [
-            'stock' => $stock,
-        ]);
-    }
-
-    #[IsGranted('ROLE_STAFF')]
-    #[Route('/stocks/{id}/edit', name: 'app_dashboard_stock_edit', methods: ['GET', 'POST'])]
-    public function editStock(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(StockType::class, $stock);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('stock/edit.html.twig', [
-            'stock' => $stock,
-            'form' => $form,
-        ]);
-    }
 }

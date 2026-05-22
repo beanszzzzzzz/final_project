@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Repository\OrderRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\ProductRepository;
+use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_STAFF')]
 class OrderController extends AbstractController
 {
+    public function __construct(private ActivityLoggerService $activityLogger)
+    {
+    }
+
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
     public function index(OrderRepository $orderRepository): Response
     {
@@ -69,6 +74,12 @@ class OrderController extends AbstractController
             $entityManager->persist($order);
             $entityManager->flush();
 
+            $this->activityLogger->logCreate(
+                'Order',
+                (int) $order->getId(),
+                (string) $order->getOrderNumber()
+            );
+
             $this->addFlash('success', 'Order created successfully!');
             return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
         }
@@ -103,6 +114,12 @@ class OrderController extends AbstractController
                 $order->setStatus($status);
                 $entityManager->flush();
 
+                $this->activityLogger->logUpdate(
+                    'Order',
+                    (int) $order->getId(),
+                    (string) $order->getOrderNumber() . ' status=' . $status
+                );
+
                 $this->addFlash('success', 'Order updated successfully!');
                 return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
             }
@@ -119,8 +136,14 @@ class OrderController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
             // Only allow deleting pending orders
             if ($order->getStatus() === 'pending') {
+                $orderId = (int) $order->getId();
+                $orderNumber = (string) $order->getOrderNumber();
+
                 $entityManager->remove($order);
                 $entityManager->flush();
+
+                $this->activityLogger->logDelete('Order', $orderId, $orderNumber);
+
                 $this->addFlash('success', 'Order deleted successfully!');
             } else {
                 $this->addFlash('error', 'Cannot delete completed or cancelled orders.');

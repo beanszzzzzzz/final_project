@@ -4,26 +4,58 @@ namespace App\Entity;
 
 use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete()
+    ],
+    normalizationContext: [
+        'groups' => ['category:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['category:write']
+    ]
+)]
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: '`order`')]
+#[ORM\Table(name: '`order`',
+    indexes: [new ORM\Index(name: 'order_customer_idx', columns: ['customer_id']), new ORM\Index(name: 'order_created_idx', columns: ['created_at'])],
+    uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_order_number', columns: ['orderNumber'])]
+)]
 class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['category:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['category:read', 'products:read'])]
     private ?string $orderNumber = null;
 
-    #[ORM\Column]
-    private ?float $total = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Groups(['category:read', 'products:read'])]
+    #[Assert\PositiveOrZero]
+    private ?string $total = null;
 
     #[ORM\Column(length: 20)]
+    #[Groups(['category:read', 'products:read'])]
     private ?string $status = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'created_at')]
+    #[Groups(['category:read', 'products:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
@@ -59,12 +91,12 @@ class Order
         return $this;
     }
 
-    public function getTotal(): ?float
+    public function getTotal(): ?string
     {
         return $this->total;
     }
 
-    public function setTotal(float $total): static
+    public function setTotal(string $total): static
     {
         $this->total = $total;
 
@@ -93,5 +125,12 @@ class Order
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function __construct()
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
     }
 }

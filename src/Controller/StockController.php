@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Stock;
 use App\Form\StockType;
 use App\Repository\StockRepository;
+use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/dashboard/stocks')]
 class StockController extends AbstractController
 {
+    public function __construct(private ActivityLoggerService $activityLogger)
+    {
+    }
+
     #[Route('', name: 'app_dashboard_stocks', methods: ['GET'])]
     public function index(StockRepository $stockRepository): Response
     {
@@ -32,6 +37,12 @@ class StockController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($stock);
             $entityManager->flush();
+
+            $this->activityLogger->logCreate(
+                'Stock',
+                (int) $stock->getId(),
+                (string) $stock->getProduct()?->getName()
+            );
 
             $this->addFlash('success', 'Stock created successfully!');
             return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
@@ -60,6 +71,12 @@ class StockController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->activityLogger->logUpdate(
+                'Stock',
+                (int) $stock->getId(),
+                (string) $stock->getProduct()?->getName()
+            );
+
             $this->addFlash('success', 'Stock updated successfully!');
             return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
         }
@@ -74,8 +91,13 @@ class StockController extends AbstractController
     public function delete(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$stock->getId(), $request->request->get('_token'))) {
+            $stockId = (int) $stock->getId();
+            $stockName = (string) $stock->getProduct()?->getName();
+
             $entityManager->remove($stock);
             $entityManager->flush();
+
+            $this->activityLogger->logDelete('Stock', $stockId, $stockName);
 
             $this->addFlash('success', 'Stock deleted successfully!');
         }

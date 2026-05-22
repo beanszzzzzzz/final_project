@@ -23,11 +23,13 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\AppCustomAuthenticator
+            custom_authenticators:
+                - App\Security\AppCustomAuthenticator
+                - App\Security\StaffGoogleAuthenticator
             entry_point: App\Security\AppCustomAuthenticator
             logout:
                 path: app_logout
-                target: app_login
+                target: app_home
                 invalidate_session: true
                 delete_cookies:
                     - REMEMBERME
@@ -40,7 +42,19 @@ security:
     access_control:
         # Public routes
         - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-email/, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google$, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google/check$, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify-email/, roles: PUBLIC_ACCESS }
+
+        # Customer self-service API routes
+        - { path: ^/api/me, roles: ROLE_USER }
+
+        # Staff API routes
+        - { path: ^/api/customers, roles: ROLE_STAFF }
         
         # Admin only routes
         - { path: ^/dashboard/product/new, roles: ROLE_ADMIN }

@@ -28,33 +28,25 @@ class CreateAdminCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('🎯 Create Admin User - Bins Cafe');
+        $io->title('Create Admin User - Bins Cafe');
 
         $email = 'admin@binscafe.com';
         $password = 'admin123';
-        $firstName = 'Admin';
-        $lastName = 'User';
-        $username = 'admin';
-
         // Check if user already exists
         $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
         
         if ($existingUser) {
-            $io->error('❌ Admin user already exists!');
-            $io->note([
-                'If you want to reset the password, run:',
-                'php bin/console app:reset-password'
-            ]);
+            $io->error('Admin user already exists.');
             return Command::FAILURE;
         }
 
         // Create new user
         $user = new User();
         $user->setEmail($email);
-        $user->setFirstName($firstName);
-        $user->setLastName($lastName);
-        $user->setUsername($username);
         $user->setRoles(['ROLE_ADMIN']);
+        $user->setIsActive(true);
+        $user->setIsVerified(true);
+        $user->setVerifiedAt(new \DateTime());
 
         // Hash password
         $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
@@ -63,15 +55,13 @@ class CreateAdminCommand extends Command
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $io->success('✅ Admin user created successfully!');
+        $io->success('Admin user created successfully.');
         $io->text([
-            '📧 Email: ' . $email,
-            '🔑 Password: ' . $password,
-            '👤 Name: ' . $firstName . ' ' . $lastName,
-            '🆔 Username: ' . $username,
+            'Email: ' . $email,
+            'Password: ' . $password,
         ]);
         $io->newLine();
-        $io->warning('⚠️  IMPORTANT: Change the password immediately after first login!');
+        $io->warning('IMPORTANT: Change the password immediately after first login.');
         $io->note('Login at: /login');
 
         return Command::SUCCESS;

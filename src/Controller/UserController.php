@@ -5,16 +5,23 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/dashboard/users')]
+#[IsGranted('ROLE_ADMIN')]
 class UserController extends AbstractController
 {
+    public function __construct(private ActivityLoggerService $activityLogger)
+    {
+    }
+
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
@@ -40,6 +47,8 @@ class UserController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $this->activityLogger->logUserCreate($user);
 
             $this->addFlash('success', 'User created successfully!');
 
@@ -76,6 +85,8 @@ class UserController extends AbstractController
 
             $entityManager->flush();
 
+            $this->activityLogger->logUserUpdate($user);
+
             $this->addFlash('success', 'User updated successfully!');
 
             return $this->redirectToRoute('app_user_index');
@@ -95,6 +106,8 @@ class UserController extends AbstractController
             $user->setIsActive(!$user->isActive());
             $entityManager->flush();
 
+            $this->activityLogger->logUserUpdate($user);
+
             $this->addFlash('success', 'User status updated successfully!');
         }
 
@@ -105,8 +118,15 @@ class UserController extends AbstractController
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+            $userId = $user->getId();
+            $userEmail = (string) $user->getEmail();
+
             $entityManager->remove($user);
             $entityManager->flush();
+
+            if ($userId !== null) {
+                $this->activityLogger->logUserDelete($userId, $userEmail);
+            }
 
             $this->addFlash('success', 'User deleted successfully!');
         }

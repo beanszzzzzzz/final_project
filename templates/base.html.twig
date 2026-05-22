@@ -1,57 +1,202 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Bins Cafe{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --brown-dark:  #3b1f1f;
+            --brown-mid:   #5c3317;
+            --brown-warm:  #7a4528;
+            --brown-light: #a0663a;
+            --cream-dark:  #e8ddd0;
+            --cream-mid:   #f2ebe0;
+            --cream-light: #faf6f0;
+            --accent:      #c8864a;
+            --text-dark:   #2a1a0e;
+            --text-mid:    #5c3d1e;
+            --text-light:  #9a7a5a;
+            --white:       #ffffff;
+        }
+        body { font-family: 'Lato', sans-serif; background: var(--cream-light); color: var(--text-dark); }
+
+        /* NAV */
+        nav { background: var(--brown-dark); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+        .nav-inner { max-width: 1260px; margin: 0 auto; padding: 0 1.8rem; display: flex; align-items: center; justify-content: space-between; min-height: 76px; }
+        .nav-logo { color: var(--cream-light); text-decoration: none; }
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            line-height: 1;
+        }
+        .brand-copy {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+        .brand-copy strong {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.24rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--cream-light);
+        }
+        .brand-copy strong span { color: #f2b67d; }
+        .brand-copy em {
+            font-style: normal;
+            font-size: 0.58rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #d8b395;
+        }
+        .nav-presence { display: inline-flex; align-items: center; gap: 0.55rem; color: #e6c6a8; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.25rem 0.7rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); }
+        .nav-presence-dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; background: #87d6a8; box-shadow: 0 0 0 5px rgba(135,214,168,0.15); }
+        .nav-links { display: flex; align-items: center; gap: 1.35rem; list-style: none; }
+        @keyframes steamDrift {
+            0% { transform: translate(-50%, 8px) scale(0.9); opacity: 0; }
+            45% { opacity: 0.45; }
+            100% { transform: translate(-50%, -11px) scale(1.12); opacity: 0; }
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f1ee;
+        @keyframes cremaSweep {
+            0% { transform: translateX(-120%); opacity: 0; }
+            25% { opacity: 0.7; }
+            100% { transform: translateX(160%); opacity: 0; }
         }
 
-        .layout {
-            display: flex;
-            min-height: 100vh;
+        .nav-links a {
+            color: var(--cream-dark);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            position: relative;
+            transition: color 0.24s ease, transform 0.24s ease;
+            will-change: transform;
+        }
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -0.6rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 220, 183, 0.42) 0%, rgba(255, 220, 183, 0) 72%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .nav-links a:hover {
+            color: #f7c494;
+            transform: translateY(-1px) rotate(-0.4deg);
+            text-shadow: 0 0 16px rgba(255, 205, 158, 0.35);
+        }
+        .nav-links a:hover::before { animation: steamDrift 0.7s ease-out 1; }
+        .nav-links .nav-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+        .nav-cta {
+            background: var(--accent) !important;
+            color: var(--white) !important;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 700 !important;
+            transition: none !important;
+            box-shadow: 0 6px 14px rgba(31, 16, 10, 0.28);
+        }
+        .nav-cta:hover {
+            background: var(--brown-light) !important;
+            transform: none;
+            box-shadow: 0 6px 14px rgba(31, 16, 10, 0.28);
+        }
+        .nav-cta-secondary {
+            border: 1px solid rgba(255,255,255,0.35);
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            transition: none;
+        }
+        .nav-cta-secondary:hover {
+            border-color: rgba(255,255,255,0.75);
+            background: rgba(255, 255, 255, 0.1);
+            transform: none;
+            box-shadow: 0 0 0 1px rgba(245, 197, 150, 0.32) inset;
+        }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
+        .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--cream-light); border-radius: 2px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nav-links a,
+            .nav-links a::before,
+            .nav-cta,
+            .nav-cta-secondary {
+                transition: none !important;
+                animation: none !important;
+            }
+            .nav-links a:hover,
+            .nav-cta:hover,
+            .nav-cta-secondary:hover {
+                transform: none;
+            }
         }
 
+        /* FOOTER */
+        footer { background: var(--brown-dark); color: var(--cream-dark); padding: 4rem 2rem 2rem; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--cream-light); margin-bottom: 1rem; }
+        .footer-brand span { color: var(--accent); }
+        .footer-desc { font-size: 0.87rem; line-height: 1.75; color: var(--text-light); max-width: 260px; }
+        .footer-col h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 1.2rem; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.6rem; }
+        .footer-col ul li a { color: var(--text-light); text-decoration: none; font-size: 0.87rem; transition: color 0.2s; }
+        .footer-col ul li a:hover { color: var(--cream-light); }
+        .footer-bottom { max-width: 1200px; margin: 2rem auto 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-light); }
+        .footer-links { display: flex; gap: 1.5rem; }
+        .footer-links a { color: var(--text-light); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* SHARED UTILITIES */
+        .btn-primary { display: inline-block; background: var(--brown-dark); color: var(--cream-light); padding: 0.85rem 2.2rem; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 0.88rem; letter-spacing: 0.05em; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+        .btn-primary:hover { background: var(--brown-mid); transform: translateY(-2px); }
+        .btn-accent { display: inline-block; background: var(--accent); color: var(--white); padding: 0.85rem 2.2rem; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 0.88rem; letter-spacing: 0.05em; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+        .btn-accent:hover { background: var(--brown-light); transform: translateY(-2px); }
+        .btn-outline { display: inline-block; background: transparent; color: var(--cream-light); padding: 0.85rem 2.2rem; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 0.88rem; letter-spacing: 0.05em; border: 2px solid rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: var(--cream-light); }
+        .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 0.75rem; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--brown-dark); line-height: 1.2; margin-bottom: 1rem; }
+        .section-sub { font-size: 1rem; color: var(--text-mid); line-height: 1.75; max-width: 560px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        section { padding: 5rem 2rem; }
+
+        /* AUTH LAYOUT */
+        .layout { display: flex; min-height: 100vh; }
         .sidebar {
             width: 250px;
-            background: #6d4c41;
-            color: white;
+            background: var(--brown-dark);
+            color: var(--cream-light);
             position: fixed;
             height: 100vh;
             overflow-y: auto;
         }
-
         .sidebar-header {
             padding: 25px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
         .sidebar-header h2 {
             font-size: 20px;
             font-weight: 600;
+            font-family: 'Playfair Display', serif;
         }
-
+        .sidebar .brand-copy strong { font-size: 1.08rem; }
+        .sidebar .brand-copy em { color: #c9a184; }
         .sidebar-menu {
             padding: 20px 0;
-            padding-bottom: 100px; /* Space for logout button */
+            padding-bottom: 100px;
         }
-
         .menu-item {
             display: flex;
             align-items: center;
@@ -59,158 +204,425 @@
             padding: 12px 20px;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
-
         .menu-item:hover,
         .menu-item.active {
             background: rgba(255,255,255,0.1);
-            color: white;
+            color: #fff;
         }
-
-        .menu-item svg,
-        .menu-item i {
+        .menu-item svg {
             width: 20px;
             height: 20px;
+            flex-shrink: 0;
         }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            background: #f5f1ee;
-        }
-
+        .main-content { flex: 1; }
         .main-content.with-sidebar {
             margin-left: 250px;
+            padding: 30px;
+            background: #f5f1ee;
+            min-height: 100vh;
         }
-
         .logout-btn {
             position: absolute;
             bottom: 20px;
-            left: 20px;
-            right: 20px;
+            left: 0;
+            right: 0;
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 12px 20px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: transparent;
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            transition: all 0.2s;
+        }
+        .logout-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
         }
 
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.2);
-            color: white;
+        .main-content.with-sidebar.admin-area {
+            background:
+                radial-gradient(circle at 8% 6%, rgba(255, 171, 104, 0.18), transparent 28%),
+                radial-gradient(circle at 90% 90%, rgba(95, 138, 120, 0.16), transparent 33%),
+                linear-gradient(145deg, #f1ece6 0%, #e8ddd1 100%);
+        }
+
+        .main-content.with-sidebar.admin-area .page-header,
+        .main-content.with-sidebar.admin-area .dashboard-header,
+        .main-content.with-sidebar.admin-area .activity-header,
+        .main-content.with-sidebar.admin-area .form-header,
+        .main-content.with-sidebar.admin-area .detail-header,
+        .main-content.with-sidebar.admin-area .receipt-header {
+            background: linear-gradient(130deg, #2f221d 0%, #4d3326 60%, #6d462f 100%) !important;
+            color: #fff6e8 !important;
+            border: 1px solid #5d3f30 !important;
+            border-radius: 16px !important;
+            box-shadow: 0 14px 30px rgba(54, 35, 26, 0.18) !important;
+        }
+
+        .main-content.with-sidebar.admin-area .page-header h1,
+        .main-content.with-sidebar.admin-area .dashboard-header h1,
+        .main-content.with-sidebar.admin-area .activity-header h1,
+        .main-content.with-sidebar.admin-area .form-header h1,
+        .main-content.with-sidebar.admin-area .detail-header h1,
+        .main-content.with-sidebar.admin-area .receipt-header h1,
+        .main-content.with-sidebar.admin-area .page-header p,
+        .main-content.with-sidebar.admin-area .dashboard-subtitle {
+            color: #fff6ea !important;
+        }
+
+        .main-content.with-sidebar.admin-area .content-card,
+        .main-content.with-sidebar.admin-area .table-container,
+        .main-content.with-sidebar.admin-area .form-container,
+        .main-content.with-sidebar.admin-area .detail-container,
+        .main-content.with-sidebar.admin-area .receipt-container,
+        .main-content.with-sidebar.admin-area .logs-card,
+        .main-content.with-sidebar.admin-area .product-card,
+        .main-content.with-sidebar.admin-area .danger-card,
+        .main-content.with-sidebar.admin-area .danger-zone,
+        .main-content.with-sidebar.admin-area .products-section,
+        .main-content.with-sidebar.admin-area .order-summary,
+        .main-content.with-sidebar.admin-area .info-card,
+        .main-content.with-sidebar.admin-area .edit-section,
+        .main-content.with-sidebar.admin-area .stat-card {
+            background: linear-gradient(180deg, #fffdf9 0%, #fff7ee 100%) !important;
+            border: 1px solid #e8d7c5 !important;
+            border-radius: 14px !important;
+            box-shadow: 0 10px 24px rgba(76, 46, 31, 0.1) !important;
+        }
+
+        .main-content.with-sidebar.admin-area .table th {
+            color: #6a5549 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.72rem !important;
+        }
+
+        .main-content.with-sidebar.admin-area .table td {
+            color: #3f2f28 !important;
+            border-bottom-color: #f0e4d8 !important;
+        }
+
+        .main-content.with-sidebar.admin-area .table tbody tr:hover {
+            background: #fff4e8 !important;
+        }
+
+        .main-content.with-sidebar.admin-area .btn,
+        .main-content.with-sidebar.admin-area button.btn,
+        .main-content.with-sidebar.admin-area .btn-primary,
+        .main-content.with-sidebar.admin-area .btn-create,
+        .main-content.with-sidebar.admin-area .btn-submit,
+        .main-content.with-sidebar.admin-area .btn-edit {
+            background: linear-gradient(125deg, #5a3422 0%, #7a4a31 100%) !important;
+            color: #fff7ef !important;
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 8px 18px rgba(74, 45, 30, 0.2) !important;
+        }
+
+        .main-content.with-sidebar.admin-area .btn:hover,
+        .main-content.with-sidebar.admin-area button.btn:hover,
+        .main-content.with-sidebar.admin-area .btn-primary:hover,
+        .main-content.with-sidebar.admin-area .btn-create:hover,
+        .main-content.with-sidebar.admin-area .btn-submit:hover,
+        .main-content.with-sidebar.admin-area .btn-edit:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.02);
+        }
+
+        .main-content.with-sidebar.admin-area .btn-secondary,
+        .main-content.with-sidebar.admin-area .btn-cancel,
+        .main-content.with-sidebar.admin-area .btn-show {
+            background: #fffdf9 !important;
+            color: #6b4736 !important;
+            border: 1px solid #d9c0aa !important;
+            box-shadow: none !important;
+        }
+
+        .main-content.with-sidebar.admin-area .btn-warning {
+            background: linear-gradient(125deg, #c57321 0%, #ad5d13 100%) !important;
+        }
+
+        .main-content.with-sidebar.admin-area .btn-danger,
+        .main-content.with-sidebar.admin-area .btn-delete {
+            background: linear-gradient(125deg, #b14536 0%, #913227 100%) !important;
+        }
+
+        .main-content.with-sidebar.admin-area .btn-info {
+            background: linear-gradient(125deg, #3b7b86 0%, #2b5f68 100%) !important;
+        }
+
+        .main-content.with-sidebar.admin-area input,
+        .main-content.with-sidebar.admin-area select,
+        .main-content.with-sidebar.admin-area textarea,
+        .main-content.with-sidebar.admin-area .form-control,
+        .main-content.with-sidebar.admin-area .form-select {
+            border: 1px solid #e2cfbc !important;
+            border-radius: 10px !important;
+            background: #fffdfa !important;
+            color: #3b2c25 !important;
+        }
+
+        .main-content.with-sidebar.admin-area input:focus,
+        .main-content.with-sidebar.admin-area select:focus,
+        .main-content.with-sidebar.admin-area textarea:focus,
+        .main-content.with-sidebar.admin-area .form-control:focus,
+        .main-content.with-sidebar.admin-area .form-select:focus {
+            border-color: #bd7f50 !important;
+            box-shadow: 0 0 0 3px rgba(189, 127, 80, 0.16) !important;
+            outline: none;
+        }
+
+        .main-content.with-sidebar.admin-area .badge,
+        .main-content.with-sidebar.admin-area .status-badge,
+        .main-content.with-sidebar.admin-area .badge-modern {
+            border-radius: 999px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.04em;
+        }
+
+        .main-content.with-sidebar.admin-area .badge-pending,
+        .main-content.with-sidebar.admin-area .badge-low,
+        .main-content.with-sidebar.admin-area .status-pending,
+        .main-content.with-sidebar.admin-area .status-low {
+            background: #fff0dd !important;
+            color: #9d5f1d !important;
+        }
+
+        .main-content.with-sidebar.admin-area .badge-completed,
+        .main-content.with-sidebar.admin-area .badge-healthy,
+        .main-content.with-sidebar.admin-area .status-completed,
+        .main-content.with-sidebar.admin-area .status-good,
+        .main-content.with-sidebar.admin-area .badge-active {
+            background: #e7f4ec !important;
+            color: #2d7a55 !important;
+        }
+
+        .main-content.with-sidebar.admin-area .badge-cancelled,
+        .main-content.with-sidebar.admin-area .badge-out,
+        .main-content.with-sidebar.admin-area .status-cancelled,
+        .main-content.with-sidebar.admin-area .badge-inactive {
+            background: #fde9e6 !important;
+            color: #9f3a31 !important;
+        }
+
+        .main-content.with-sidebar.admin-area .logs-card-header {
+            background: linear-gradient(180deg, #fff8f1 0%, #fffefc 100%) !important;
+            border-bottom: 1px solid #edd9c8 !important;
+        }
+
+        .main-content.with-sidebar.admin-area .empty-state,
+        .main-content.with-sidebar.admin-area .no-data,
+        .main-content.with-sidebar.admin-area .no-records {
+            border: 1px dashed #dec5ae;
+            border-radius: 12px;
+            background: #fff8f1;
+            color: #765f52 !important;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--brown-dark); flex-direction: column; padding: 1.5rem 2rem; gap: 1.2rem; }
+            .nav-links.open { display: flex; }
+            .nav-toggle { display: flex; }
+            .nav-presence { display: none; }
+            .nav-links .nav-divider { display: none; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-bottom { flex-direction: column; gap: 1rem; }
+            .section-title { font-size: 1.8rem; }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-content.with-sidebar {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .logout-btn {
+                position: static;
+                margin: 0;
+            }
+            .brand-copy em { display: none; }
         }
     </style>
-    
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-    <div class="layout">
-        {% if app.user %}
-            <!-- Sidebar for logged in users -->
-            <div class="sidebar">
-                <div class="sidebar-header">
-                    <h2>Bins Cafe</h2>
-                </div>
-                
-                <nav class="sidebar-menu">
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_dashboard_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_index' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                            Dashboard
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_order_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_order' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                            </svg>
-                            Orders
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_dashboard_products') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_product' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                            Products
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_dashboard_stocks') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_stock' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                            </svg>
-                            Stocks
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_USER') %}
-                        <a href="{{ path('app_profile') }}" class="menu-item {% if app.request.get('_route') starts with 'app_profile' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                            My Profile
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_user_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_user' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                            Users
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_dashboard_customers') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_customers' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            Customers
-                        </a>
-                    {% endif %}
-                    
-                    {# Activity Logs - Admin Only #}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_activity_log_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_activity_log' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Activity Logs
-                        </a>
-                    {% endif %}
-                </nav>
-                
-                <a href="{{ path('app_logout') }}" class="logout-btn">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    Log Out
-                </a>
-            </div>
-        {% endif %}
 
-        <!-- Main content area -->
-        <div class="main-content {% if app.user %}with-sidebar{% endif %}">
-            {% block body %}{% endblock %}
+{% if not app.user %}
+<nav>
+    <div class="nav-inner">
+        <a href="{{ path('app_home') }}" class="nav-logo" aria-label="Bins Cafe home">
+            <span class="brand-mark">
+                <span class="brand-copy">
+                    <strong>Bins <span>Cafe</span></strong>
+                    <em>Roast and Ritual</em>
+                </span>
+            </span>
+        </a>
+        <div class="nav-presence">
+            <span class="nav-presence-dot" aria-hidden="true"></span>
+            Open Daily 7am-10pm
+        </div>
+        <button class="nav-toggle" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links">
+            <li><a href="{{ path('app_home') }}">Home</a></li>
+            <li><a href="{{ path('app_about') }}">About</a></li>
+            <li><a href="{{ path('app_menu') }}">Menu</a></li>
+            <li><a href="{{ path('app_reservation') }}">Reserve</a></li>
+            <li><a href="{{ path('app_contact') }}">Contact</a></li>
+            <li class="nav-divider" aria-hidden="true"></li>
+            <li><a href="{{ path('app_register') }}" class="nav-cta-secondary">Sign Up</a></li>
+            <li><a href="{{ path('app_login') }}" class="nav-cta">Log In</a></li>
+        </ul>
+    </div>
+</nav>
+{% endif %}
+
+{% set page_body %}
+{% block body %}{% endblock %}
+{% endset %}
+
+{% if app.user %}
+{% set routeName = app.request.get('_route')|default('') %}
+{% set isAdminUser = is_granted('ROLE_ADMIN') %}
+{% set isStaffUser = is_granted('ROLE_STAFF') and not isAdminUser %}
+{% set isCustomerUser = is_granted('ROLE_USER') and not isStaffUser and not isAdminUser %}
+{% set isAdminArea = routeName starts with 'app_dashboard' or routeName starts with 'app_order' or routeName starts with 'app_user' or routeName starts with 'app_activity_log' or routeName starts with 'app_product' or routeName starts with 'app_stock' or routeName starts with 'app_customers' %}
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>
+                <span class="brand-mark">
+                    <span class="brand-copy">
+                        <strong>Bins <span>Cafe</span></strong>
+                        <em>{% if isAdminUser %}Admin Console{% elseif isStaffUser %}Staff Console{% else %}Customer Portal{% endif %}</em>
+                    </span>
+                </span>
+            </h2>
+        </div>
+
+        <nav class="sidebar-menu">
+            {% if is_granted('ROLE_STAFF') %}
+                <a href="{{ path('app_dashboard_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_index' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    Dashboard
+                </a>
+                <a href="{{ path('app_order_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_order' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    Orders
+                </a>
+                <a href="{{ path('app_dashboard_stocks') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_stock' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    Stocks
+                </a>
+                <a href="{{ path('app_dashboard_customers') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_customers' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    Customers
+                </a>
+            {% endif %}
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_dashboard_products') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_product' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    Products
+                </a>
+                <a href="{{ path('app_user_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_user' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    Users
+                </a>
+                <a href="{{ path('app_activity_log_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_activity_log' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Activity Logs
+                </a>
+            {% endif %}
+
+            {% if is_granted('ROLE_USER') %}
+                <a href="{{ path('app_profile') }}" class="menu-item {% if app.request.get('_route') starts with 'app_profile' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    My Profile
+                </a>
+            {% endif %}
+        </nav>
+
+        <a href="{{ path('app_logout') }}" class="logout-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Log Out
+        </a>
+    </aside>
+
+    <main class="main-content with-sidebar{% if isAdminArea %} admin-area{% endif %}">
+        {{ page_body|raw }}
+    </main>
+</div>
+{% else %}
+{{ page_body|raw }}
+{% endif %}
+
+{% if not app.user %}
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand">
+                <span class="brand-mark">
+                    <span class="brand-copy">
+                        <strong>Bins <span>Cafe</span></strong>
+                        <em>Roast and Ritual</em>
+                    </span>
+                </span>
+            </div>
+            <p class="footer-desc">A cozy corner where every cup tells a story. Handcrafted drinks, fresh bites, and warm vibes — every single day.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Navigate</h4>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_about') }}">About Us</a></li>
+                <li><a href="{{ path('app_menu') }}">Our Menu</a></li>
+                <li><a href="{{ path('app_contact') }}">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Visit Us</h4>
+            <ul>
+                <li><a href="#">Mon–Fri: 7am – 9pm</a></li>
+                <li><a href="#">Sat–Sun: 8am – 10pm</a></li>
+                <li><a href="#">123 Brew Street</a></li>
+                <li><a href="#">Cebu City, PH</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Connect</h4>
+            <ul>
+                <li><a href="#">Facebook</a></li>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">TikTok</a></li>
+                <li><a href="#">hello@binscafe.com</a></li>
+            </ul>
         </div>
     </div>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    {% block javascripts %}{% endblock %}
+    <div class="footer-bottom">
+        <span>© {{ "now"|date("Y") }} Bins Cafe. All rights reserved.</span>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms</a>
+        </div>
+    </div>
+</footer>
+{% endif %}
+
+{% block javascripts %}{% endblock %}
 </body>
 </html>

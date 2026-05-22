@@ -1,195 +1,332 @@
 {% extends 'base.html.twig' %}
+{% block title %}Log In - Bins Cafe{% endblock %}
 
-{% block title %}Login - Bins Cafe{% endblock %}
+{% block stylesheets %}
+<style>
+    @keyframes authFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 8% 16%, rgba(238, 186, 138, 0.22), transparent 30%),
+            radial-gradient(circle at 90% 88%, rgba(112, 76, 52, 0.3), transparent 34%),
+            linear-gradient(135deg, #1f1411 0%, #2e1d18 50%, #3d281d 100%);
+    }
+
+    .login-wrapper {
+        min-height: calc(100vh - 68px);
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        align-items: stretch;
+    }
+
+    .login-left {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-left::before {
+        content: '';
+        position: absolute;
+        top: 12%;
+        right: 8%;
+        width: 340px;
+        height: 340px;
+        border-radius: 999px;
+        border: 1px dashed rgba(255, 229, 200, 0.2);
+    }
+
+    .login-left-content {
+        position: relative;
+        z-index: 1;
+        width: min(92%, 560px);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 234, 213, 0.16);
+        background:
+            linear-gradient(180deg, rgba(255, 246, 236, 0.08) 0%, rgba(255, 246, 236, 0.03) 100%);
+        padding: 2.2rem;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
+        animation: authFadeUp 0.45s ease-out both;
+    }
+
+    .left-kicker {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.66rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #f0d2b4;
+        border: 1px solid rgba(255, 224, 192, 0.38);
+        border-radius: 999px;
+        padding: 0.26rem 0.62rem;
+        margin-bottom: 1rem;
+    }
+
+    .login-brand {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 2.8vw, 2.8rem);
+        color: #fff5e8;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.02em;
+    }
+
+    .login-brand span { color: #f1bb86; }
+
+    .login-tagline {
+        font-size: 0.74rem;
+        color: #dab99a;
+        letter-spacing: 0.15em;
+        margin-bottom: 1.4rem;
+        text-transform: uppercase;
+    }
+
+    .login-quote {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.08rem;
+        color: #f0dfcf;
+        line-height: 1.7;
+        max-width: 420px;
+        opacity: 0.9;
+        margin-bottom: 1.2rem;
+    }
+
+    .left-note {
+        color: #d2b091;
+        font-size: 0.86rem;
+        line-height: 1.6;
+        max-width: 420px;
+        margin-bottom: 1.1rem;
+    }
+
+    .login-visual {
+        width: 100%;
+        max-width: 460px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 233, 210, 0.25);
+        overflow: hidden;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .login-visual img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        filter: saturate(1.05) contrast(1.03);
+    }
+
+    .login-right {
+        background: linear-gradient(180deg, #fdf7f0 0%, #f8eee3 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.2rem;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 430px;
+        background: var(--white);
+        border: 1px solid #ecd7c2;
+        border-radius: 18px;
+        padding: 2rem 1.9rem;
+        box-shadow: 0 14px 28px rgba(69, 39, 24, 0.14);
+        animation: authFadeUp 0.45s ease-out 0.08s both;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .login-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 30px rgba(69, 39, 24, 0.16);
+    }
+
+    .login-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 0.95rem;
+    }
+
+    .login-badge {
+        font-size: 0.64rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #9b6237;
+        border: 1px solid #e5ccb3;
+        border-radius: 999px;
+        padding: 0.24rem 0.6rem;
+        background: #fff5e8;
+        font-weight: 700;
+    }
+
+    .login-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #3d271a;
+        margin-bottom: 0.35rem;
+    }
+
+    .login-card-sub {
+        font-size: 0.88rem;
+        color: #7a5a45;
+        margin-bottom: 1.4rem;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.15rem; }
+    .form-group label { font-size: 0.7rem; font-weight: 700; color: #4b2f20; text-transform: uppercase; letter-spacing: 0.12em; }
+    .form-group input { padding: 0.88rem 0.95rem; border: 1px solid #e2cdb8; border-radius: 10px; font-family: 'Lato', sans-serif; font-size: 0.94rem; color: #3b271d; background: #fffdfb; outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+    .form-group input:focus { border-color: #bf8458; box-shadow: 0 0 0 3px rgba(191, 132, 88, 0.15); background: #ffffff; }
+
+    .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.35rem; font-size: 0.82rem; }
+    .form-check { display: flex; align-items: center; gap: 0.5rem; color: var(--text-mid); cursor: pointer; }
+    .form-check input[type="checkbox"] { accent-color: #5d3824; }
+    .form-forgot { color: #a26134; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
+    .form-forgot:hover { color: #7a4528; }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.95rem;
+        background: linear-gradient(120deg, #4f2f20 0%, #764b31 100%);
+        color: var(--cream-light);
+        border: none;
+        border-radius: 10px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.94rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: transform 0.18s, box-shadow 0.2s;
+        margin-bottom: 1.3rem;
+        box-shadow: 0 9px 18px rgba(58, 31, 24, 0.24);
+    }
+    .btn-login:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(58, 31, 24, 0.3); }
+    .oauth-sep { text-align: center; color: var(--text-light); font-size: 0.79rem; margin: 0.7rem 0 0.9rem; }
+    .btn-google {
+        width: 100%;
+        padding: 0.82rem 1rem;
+        border-radius: 10px;
+        border: 1.5px solid #e5d4bf;
+        background: #fff;
+        color: #2f2f2f;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.91rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .btn-google:hover { border-color: #ccb298; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07); }
+    .alert-error { background: #fde8e8; border: 1px solid #f5c0c0; color: #8b2020; padding: 0.8rem 0.95rem; border-radius: 10px; font-size: 0.86rem; margin-bottom: 1rem; }
+    .alert-success { background:#e8f5e9; border:1px solid #c8e6c9; color:#2e7d32; padding: 0.8rem 0.95rem; border-radius: 10px; font-size: 0.86rem; margin-bottom: 1rem; }
+    .login-back { text-align: center; margin-top: 1.2rem; font-size: 0.84rem; color: var(--text-mid); }
+    .login-back a { color: var(--accent); font-weight: 700; text-decoration: none; }
+    .login-back a:hover { color: var(--brown-mid); }
+
+    @media (max-width: 980px) {
+        .login-wrapper { grid-template-columns: 1fr; }
+        .login-left { display: none; }
+        .login-right { padding: 1.6rem 1rem; background: transparent; }
+        .login-card { max-width: 470px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .login-left-content,
+        .login-card {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .login-card:hover {
+            transform: none;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="login-container">
-    <div class="login-card">
-        <div class="logo-section">
-            <h1>Bins Cafe</h1>
-            <p>Admin Dashboard</p>
+<div class="login-wrapper">
+    <div class="login-left">
+        <div class="login-left-content">
+            <span class="left-kicker">Guest Concierge</span>
+            <div class="login-brand">Bins <span>Cafe</span></div>
+            <p class="login-tagline">Roast and Ritual</p>
+            <p class="login-quote">Step into your daily brew briefing. Orders, menu updates, and customer notes are ready as soon as you sign in.</p>
+            <p class="left-note">Designed for staff and members who keep the cafe running warm, fast, and personal.</p>
+            <div class="login-visual">
+                <img src="/images/hero-coffee.jpg" alt="Freshly brewed coffee at Bins Cafe">
+            </div>
         </div>
+    </div>
+    <div class="login-right">
+        <div class="login-card">
+            <div class="login-topbar">
+                <span class="login-badge">Secure Sign In</span>
+            </div>
+            <h1 class="login-card-title">Welcome back</h1>
+            <p class="login-card-sub">Sign in to your Bins Cafe account</p>
 
-        {% if error %}
-            <div class="alert alert-error">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            {% for message in app.flashes('success') %}
+                <div class="alert-success">{{ message }}</div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert-error">{{ message }}</div>
+            {% endfor %}
+
+            {% if error %}
+                <div class="alert-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <form method="post" action="{{ path('app_login') }}">
+                <div class="form-group">
+                    <label for="username">Email Address</label>
+                    <input type="email" id="username" name="_username" value="{{ last_username }}" placeholder="you@example.com" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="_password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-options">
+                    <label class="form-check">
+                        <input type="checkbox" name="_remember_me"> Remember me
+                    </label>
+                    <a href="#" class="form-forgot">Forgot password?</a>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+
+            <div class="oauth-sep">or</div>
+            <a href="{{ path('connect_google_start') }}" class="btn-google">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.8-5.5 3.8-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 3.9 1.5l2.7-2.6C17 3 14.7 2 12 2 6.9 2 2.8 6.1 2.8 11.2S6.9 20.4 12 20.4c6.9 0 9.2-4.8 9.2-7.3 0-.5-.1-.9-.1-1.3H12z"/>
                 </svg>
-                {{ error.messageKey|trans(error.messageData, 'security') }}
-            </div>
-        {% endif %}
+                Continue with Google
+            </a>
 
-        <form method="post" class="login-form">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input 
-                    type="email" 
-                    value="{{ last_username }}" 
-                    name="email" 
-                    id="email" 
-                    class="form-control"
-                    placeholder="admin@example.com"
-                    required 
-                    autofocus
-                >
+            <div class="login-back">
+                New here? <a href="{{ path('app_register') }}">Create an account</a>
             </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input 
-                    type="password" 
-                    name="password" 
-                    id="password" 
-                    class="form-control"
-                    placeholder="••••••••"
-                    required
-                >
+            <div class="login-back">
+                <a href="{{ path('app_home') }}">← Back to Home</a>
             </div>
-
-            <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox" name="_remember_me">
-                    <span>Remember me</span>
-                </label>
-            </div>
-
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-            <button type="submit" class="btn-login">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                </svg>
-                Sign In
-            </button>
-        </form>
+        </div>
     </div>
 </div>
-
-<style>
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f8f5f2 0%, #e8e1dc 100%);
-    padding: 20px;
-}
-
-.login-card {
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(93, 64, 55, 0.15);
-    width: 100%;
-    max-width: 420px;
-}
-
-.logo-section {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.logo-section h1 {
-    color: #5d4037;
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-}
-
-.logo-section p {
-    color: #8d6e63;
-    font-size: 14px;
-    margin: 0;
-}
-
-.alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-}
-
-.alert-error {
-    background: #ffebee;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    color: #5d4037;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #5d4037;
-    background: white;
-    transition: all 0.3s;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #8d6e63;
-    box-shadow: 0 0 0 3px rgba(141, 110, 99, 0.1);
-}
-
-.form-control::placeholder {
-    color: #a1887f;
-}
-
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.remember-me {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #666;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.remember-me input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #6d4c41;
-}
-
-.btn-login {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-login:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(109, 76, 65, 0.3);
-}
-</style>
 {% endblock %}

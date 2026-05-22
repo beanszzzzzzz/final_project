@@ -1,162 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create New Stock{% endblock %}
+{% block title %}Create User{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+{{ parent() }}
 <style>
-    .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-    }
-
-    .form-header {
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .form-header h1 {
-        color: #5d4037;
-        font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-row {
+    .role-group {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid #e4d0bd;
+        border-radius: 10px;
+        background: #fff9f2;
     }
 
-    .form-label, label {
-        display: block;
-        color: #5d4037;
-        font-weight: 500;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-    .form-control, select, input[type="text"], input[type="number"], input[type="datetime-local"] {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.3s;
-    }
-
-    .form-control:focus, select:focus, input:focus {
-        outline: none;
-        border-color: #6d4c41;
-        box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.1);
-    }
-
-    .input-help {
-        font-size: 12px;
-        color: #8d6e63;
-        margin-top: 5px;
-        display: block;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #f0f0f0;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
+    .role-group label {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        font-size: 14px;
+        margin: 0;
     }
 
-    .btn-primary {
-        background: #6d4c41;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #5d4037;
-    }
-
-    .btn-secondary {
-        background: #e0e0e0;
-        color: #5d4037;
-    }
-
-    .btn-secondary:hover {
-        background: #bdbdbd;
-    }
-
-    .form-error {
-        color: #f44336;
-        font-size: 12px;
-        margin-top: 5px;
+    .checkbox-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 </style>
+{% endblock %}
 
+{% block body %}
 <div class="form-container">
     <div class="form-header">
-        <h1>➕ Create New Stock</h1>
+        <h1>Create New User</h1>
     </div>
 
     {{ form_start(form) }}
         <div class="form-group">
-            {{ form_label(form.product) }}
-            {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.product) }}
-            <span class="input-help">Choose the product for this stock entry</span>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                {{ form_label(form.quantity) }}
-                {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.quantity) }}
-                <span class="input-help">Current stock quantity</span>
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.reorderLevel) }}
-                {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.reorderLevel) }}
-                <span class="input-help">Minimum quantity before reorder</span>
-            </div>
+            {{ form_label(form.email) }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'user@binscafe.com'}}) }}
+            {{ form_errors(form.email) }}
+            <span class="input-help">This email will be used for sign in.</span>
         </div>
 
         <div class="form-group">
-            {{ form_label(form.lastUpdated) }}
-            {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.lastUpdated) }}
-            <span class="input-help">Date and time of last stock update</span>
+            {{ form_label(form.plainPassword) }}
+            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'At least 6 characters'}}) }}
+            {{ form_errors(form.plainPassword) }}
+            <span class="input-help">Leave blank only if you plan to set it later.</span>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.roles) }}
+            <div class="role-group">
+                {{ form_widget(form.roles) }}
+            </div>
+            {{ form_errors(form.roles) }}
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-row">
+                {{ form_widget(form.isActive) }}
+                {{ form_label(form.isActive) }}
+            </div>
+            {{ form_errors(form.isActive) }}
+            <span class="input-help">Inactive users cannot access the dashboard.</span>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Create Stock
-            </button>
-            <a href="{{ path('app_dashboard_stocks') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create User</button>
+            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     {{ form_end(form) }}
 </div>

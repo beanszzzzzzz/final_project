@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Fresh pastries tray">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f6e7d5"/>
+      <stop offset="100%" stop-color="#e3c9a9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect x="240" y="480" width="720" height="90" rx="20" fill="#ba8a62"/>
+  <circle cx="380" cy="430" r="84" fill="#d89856"/>
+  <circle cx="600" cy="420" r="92" fill="#cf8d4c"/>
+  <circle cx="820" cy="432" r="86" fill="#d69754"/>
+  <circle cx="380" cy="430" r="50" fill="#f4d09a"/>
+  <circle cx="600" cy="420" r="54" fill="#f0c88f"/>
+  <circle cx="820" cy="432" r="50" fill="#f4cf98"/>
+</svg>

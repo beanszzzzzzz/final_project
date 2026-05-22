@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Portrait of Carlo Mendez">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#efe0ce"/>
+      <stop offset="100%" stop-color="#cba985"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <circle cx="400" cy="338" r="168" fill="#efc6a2"/>
+  <path d="M246 336c4-122 90-206 170-206 72 0 142 52 152 138-56-20-108-18-154 2-64 26-110 58-168 66Z" fill="#2e1d16"/>
+  <rect x="250" y="520" width="300" height="220" rx="46" fill="#4a2d1f"/>
+  <circle cx="340" cy="340" r="10" fill="#3a2418"/>
+  <circle cx="460" cy="340" r="10" fill="#3a2418"/>
+  <path d="M342 428c34 24 80 22 116-2" fill="none" stroke="#875536" stroke-width="10" stroke-linecap="round"/>
+  <rect x="348" y="390" width="104" height="34" rx="16" fill="#dfb18d" opacity="0.55"/>
+</svg>

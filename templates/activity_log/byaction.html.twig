@@ -2,313 +2,241 @@
 
 {% block title %}Activity Logs - {{ action|upper }}{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+{{ parent() }}
 <style>
-    .activity-header {
-        background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    .activity-shell {
+        display: grid;
+        gap: 18px;
+        font-family: 'Lato', sans-serif;
     }
-    
-    .stat-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        overflow: hidden;
+
+    .ledger-hero {
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid #5f3e2f;
+        background:
+            radial-gradient(circle at 12% 18%, rgba(255, 199, 149, 0.25), transparent 30%),
+            linear-gradient(130deg, #2a1f1c 0%, #493025 55%, #603c2c 100%);
+        color: #fff4e7;
+        box-shadow: 0 16px 32px rgba(58, 34, 25, 0.2);
         position: relative;
+        overflow: hidden;
     }
-    
-    .stat-card::before {
+
+    .ledger-hero::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
+        inset: 0;
+        background-image: linear-gradient(transparent 94%, rgba(255, 255, 255, 0.05) 94%);
+        background-size: 100% 26px;
+        pointer-events: none;
     }
-    
-    .stat-card.primary::before { background: linear-gradient(90deg, #6d4c41, #8d6e63); }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
+
+    .hero-top {
+        position: relative;
+        z-index: 1;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
     }
-    
-    .stat-card.primary .stat-icon { background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%); color: white; }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
+
+    .hero-kicker {
+        display: inline-block;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        border: 1px solid rgba(255, 232, 206, 0.45);
+        border-radius: 999px;
+        padding: 0.28rem 0.66rem;
+        margin-bottom: 10px;
+        color: #ffe0bb;
+    }
+
+    .ledger-hero h1 {
         margin: 0;
-        color: #2d3748;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+        line-height: 1.2;
     }
-    
-    .stat-label {
-        color: #718096;
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+
+    .activity-subtitle {
+        margin-top: 8px;
+        color: #ead5c2;
+        max-width: 540px;
     }
-    
-    .logs-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        overflow: hidden;
-        border: none;
+
+    .hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .content-card {
+        border-radius: 14px;
+        border: 1px solid #e5d2c0;
+        background: linear-gradient(170deg, #fffdfb 0%, #fff5e9 100%);
+        box-shadow: 0 10px 18px rgba(84, 54, 38, 0.08);
     }
-    
-    .logs-card-header {
-        background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
-        padding: 1.5rem;
-        border-bottom: 2px solid #e2e8f0;
+
+    .metric-line { font-size: 0.9rem; color: #6f594d; margin-top: 6px; }
+
+    .table-container {
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid #e7d7c8;
+        background: linear-gradient(180deg, #fffcf8 0%, #fff8f0 100%);
     }
-    
-    .filter-buttons .btn {
-        border-radius: 25px;
-        padding: 0.5rem 1.5rem;
-        font-weight: 500;
-        margin: 0.25rem;
-        transition: all 0.3s ease;
-    }
-    
-    .table-modern {
-        margin: 0;
-    }
-    
-    .table-modern thead th {
-        background: #f7fafc;
-        color: #4a5568;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1rem;
-    }
-    
-    .table-modern tbody tr {
-        transition: all 0.2s ease;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .table-modern tbody tr:hover {
-        background: #f7fafc;
-    }
-    
-    .table-modern td {
-        padding: 1rem;
-        vertical-align: middle;
-        border: none;
-    }
-    
-    .badge-modern {
-        padding: 0.4rem 0.9rem;
-        border-radius: 20px;
-        font-weight: 500;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .badge-role {
-        background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
-        color: white;
-    }
-    
-    .badge-action-login { background: linear-gradient(135deg, #8d6e63 0%, #a1887f 100%); color: white; }
-    .badge-action-logout { background: linear-gradient(135deg, #bcaaa4 0%, #d7ccc8 100%); color: #4a5568; }
-    .badge-action-create { background: linear-gradient(135deg, #795548 0%, #8d6e63 100%); color: white; }
-    .badge-action-update { background: linear-gradient(135deg, #a1887f 0%, #bcaaa4 100%); color: white; }
-    .badge-action-delete { background: linear-gradient(135deg, #d84315 0%, #ff6f00 100%); color: white; }
-    
-    .user-link {
-        color: #6d4c41;
+
+    .actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+    .actions-row .btn {
         text-decoration: none;
-        font-weight: 500;
     }
-    
-    .user-link:hover {
-        color: #5d4037;
-        text-decoration: underline;
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.26rem 0.62rem;
+        border-radius: 999px;
+        font-size: 0.69rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
-    
-    .timestamp {
-        color: #718096;
-        font-size: 0.85rem;
+    .status-login { background: #e6f4ec; color: #2a7a53; }
+    .status-logout { background: #f0ece8; color: #6b5950; }
+    .status-create { background: #efe8ff; color: #5a3ea0; }
+    .status-update { background: #fff1de; color: #9c5d1b; }
+    .status-delete { background: #fde8e5; color: #a1382f; }
+
+    .table-wrap {
+        overflow-x: auto;
+        border: 1px solid #ead7c6;
+        border-radius: 12px;
+        background: #fffdfa;
     }
-    
-    .ip-address {
-        font-family: 'Courier New', monospace;
-        color: #a0aec0;
+    .log-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 780px;
+    }
+    .log-table th {
+        text-align: left;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        color: #766257;
+        padding: 12px 10px;
+        border-bottom: 1px solid #ead8c8;
+    }
+    .log-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #f0e2d5;
+        color: #3b2e28;
+        vertical-align: top;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    .log-table tr:hover td { background: #fff6ee; }
+    .mono {
+        font-family: Consolas, 'Courier New', monospace;
         font-size: 0.8rem;
+        color: #745f54;
     }
-    
+    .soft { color: #7a665a; font-size: 0.82rem; }
+    .user-link {
+        color: #5a392a;
+        text-decoration: none;
+        font-weight: 700;
+    }
+    .user-link:hover { text-decoration: underline; }
+
     .empty-state {
-        padding: 3rem;
+        padding: 20px;
         text-align: center;
-        color: #a0aec0;
+        border-radius: 10px;
+        background: #fff7ef;
+        border: 1px dashed #dfc8b3;
+        color: #7a6255;
+    }
+
+    @media (max-width: 960px) {
+        .hero-top { flex-direction: column; }
     }
 </style>
+{% endblock %}
 
-<div class="container-fluid px-4 py-4">
-    <div class="activity-header">
-        <div class="d-flex justify-content-between align-items-center">
+{% block body %}
+<div class="activity-shell">
+    <div class="ledger-hero">
+        <div class="hero-top">
             <div>
-                <h1 class="mb-2">
-                    <i class="fas fa-filter"></i> {{ action|upper }} Activities
-                </h1>
-                <p class="mb-0 opacity-75">Showing all {{ action|lower }} activities</p>
+                <span class="hero-kicker">Audit Intelligence</span>
+                <h1>Activity Logs - {{ action|upper }}</h1>
+                <p class="activity-subtitle">Filtered operations for {{ action|lower }} events.</p>
             </div>
-            <div>
-                <a href="{{ path('app_activity_log_index') }}" class="btn btn-light btn-lg me-2">
-                    <i class="fas fa-arrow-left me-2"></i> All Logs
-                </a>
-                <a href="{{ path('app_dashboard_index') }}" class="btn btn-outline-light btn-lg">
-                    <i class="fas fa-home me-2"></i> Dashboard
-                </a>
+            <div class="hero-actions">
+                <a href="{{ path('app_activity_log_index') }}" class="btn btn-secondary">All Logs</a>
+                <a href="{{ path('app_dashboard_index') }}" class="btn btn-primary">Dashboard</a>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-12">
-            <div class="stat-card primary">
-                <div class="d-flex align-items-center">
-                    <div class="stat-icon me-4">
-                        {% if action == 'login' %}
-                            <i class="fas fa-sign-in-alt"></i>
-                        {% elseif action == 'logout' %}
-                            <i class="fas fa-sign-out-alt"></i>
-                        {% elseif action == 'create' %}
-                            <i class="fas fa-plus"></i>
-                        {% elseif action == 'update' %}
-                            <i class="fas fa-edit"></i>
-                        {% elseif action == 'delete' %}
-                            <i class="fas fa-trash"></i>
-                        {% else %}
-                            <i class="fas fa-list"></i>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <h2 class="stat-number">{{ logs|length }}</h2>
-                        <p class="stat-label mb-0">{{ action|upper }} Activities</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="content-card">
+        <h3 style="margin:0;">Total Matching Logs: {{ logs|length }}</h3>
+        <p class="metric-line">Filter is currently set to {{ action|upper }}.</p>
     </div>
 
-    <div class="logs-card mb-4">
-        <div class="logs-card-header">
-            <h5 class="mb-3">
-                <i class="fas fa-filter me-2"></i> Filter by Action
-            </h5>
-            <div class="filter-buttons">
-                <a href="{{ path('app_activity_log_index') }}" class="btn btn-outline-dark">
-                    <i class="fas fa-list me-1"></i> All
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'login'}) }}" 
-                   class="btn {{ action == 'login' ? 'btn-success' : 'btn-outline-success' }}">
-                    <i class="fas fa-sign-in-alt me-1"></i> Login
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'logout'}) }}" 
-                   class="btn {{ action == 'logout' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'create'}) }}" 
-                   class="btn {{ action == 'create' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    <i class="fas fa-plus me-1"></i> Create
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'update'}) }}" 
-                   class="btn {{ action == 'update' ? 'btn-warning' : 'btn-outline-warning' }}">
-                    <i class="fas fa-edit me-1"></i> Update
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'delete'}) }}" 
-                   class="btn {{ action == 'delete' ? 'btn-danger' : 'btn-outline-danger' }}">
-                    <i class="fas fa-trash me-1"></i> Delete
-                </a>
-            </div>
+    <div class="table-container">
+        <div class="actions-row">
+            <a href="{{ path('app_activity_log_index') }}" class="btn btn-secondary">All</a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'login'}) }}" class="btn {{ action == 'login' ? 'btn-primary' : 'btn-secondary' }}">Login</a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'logout'}) }}" class="btn {{ action == 'logout' ? 'btn-primary' : 'btn-secondary' }}">Logout</a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'create'}) }}" class="btn {{ action == 'create' ? 'btn-primary' : 'btn-secondary' }}">Create</a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'update'}) }}" class="btn {{ action == 'update' ? 'btn-primary' : 'btn-secondary' }}">Update</a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'delete'}) }}" class="btn {{ action == 'delete' ? 'btn-primary' : 'btn-secondary' }}">Delete</a>
         </div>
-    </div>
 
-    <div class="logs-card">
-        <div class="logs-card-header">
-            <h5 class="mb-0">
-                <i class="fas fa-clipboard-list me-2"></i> {{ action|upper }} Activities
-            </h5>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-modern">
+        <div class="table-wrap">
+            <table class="log-table">
                 <thead>
                     <tr>
-                        <th>User ID</th>
-                        <th>Username</th>
+                        <th>User</th>
                         <th>Role</th>
                         <th>Action</th>
                         <th>Target Data</th>
-                        <th>Date & Time</th>
+                        <th>Date and Time</th>
                         <th>IP Address</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for log in logs %}
-                    <tr>
-                        <td><strong class="text-muted">#{{ log.userId }}</strong></td>
-                        <td>
-                            <a href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}" class="user-link">
-                                <i class="fas fa-user me-1"></i>{{ log.username }}
-                            </a>
-                        </td>
-                        <td>
-                            <span class="badge badge-modern badge-role">{{ log.formattedRole }}</span>
-                        </td>
-                        <td>
-                            <span class="badge badge-modern badge-action-{{ log.action|lower }}">
-                                {{ log.action }}
-                            </span>
-                        </td>
-                        <td>{{ log.targetData }}</td>
-                        <td>
-                            <span class="timestamp">
-                                {{ log.dateTime|date('M d, Y h:i A') }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="ip-address">{{ log.ipAddress ?? 'N/A' }}</span>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                {% if log.userId is not null %}
+                                    <a class="user-link" href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}">{{ log.username }}</a>
+                                    <div class="mono">#{{ log.userId }}</div>
+                                {% else %}
+                                    <span>{{ log.username }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="soft">{{ log.formattedRole }}</td>
+                            <td><span class="status-pill status-{{ log.action|lower }}">{{ log.action }}</span></td>
+                            <td>{{ log.targetData }}</td>
+                            <td>
+                                {{ log.dateTime|date('M d, Y') }}
+                                <div class="mono">{{ log.dateTime|date('h:i:s A') }}</div>
+                            </td>
+                            <td class="mono">{{ log.ipAddress ?? 'N/A' }}</td>
+                        </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <i class="fas fa-inbox"></i>
-                                <h5>No {{ action|upper }} Activities</h5>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">No {{ action|upper }} activities found.</div>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-</div>ss
+</div>
 {% endblock %}

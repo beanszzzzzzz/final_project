@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Butter croissant">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbf2e2"/>
+      <stop offset="100%" stop-color="#e4c9a9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <ellipse cx="600" cy="620" rx="390" ry="75" fill="#cfaf8e" opacity="0.35"/>
+  <path d="M320 500c20-110 120-190 280-190s260 80 280 190c-50 32-104 46-168 46-54 0-88-10-112-28-24 18-58 28-112 28-64 0-118-14-168-46Z" fill="#d9904a"/>
+  <path d="M390 490c18-62 84-110 180-110" fill="none" stroke="#f4c38d" stroke-width="20" stroke-linecap="round"/>
+  <path d="M590 380c88 0 156 46 182 112" fill="none" stroke="#f4c38d" stroke-width="20" stroke-linecap="round"/>
+  <path d="M520 470c26-18 50-28 80-28s54 10 80 28" fill="none" stroke="#f7d9b3" stroke-width="16" stroke-linecap="round"/>
+</svg>

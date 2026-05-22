@@ -3,7 +3,6 @@
 namespace App\Security;
 
 use App\Entity\User;
-use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,14 +27,17 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private EntityManagerInterface $entityManager,
-        private ActivityLoggerService $activityLogger
+        private EntityManagerInterface $entityManager
     ) {
     }
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->getPayload()->getString('email');
+        $payload = $request->getPayload();
+
+        // Support both modern field names (email/password) and Symfony defaults (_username/_password).
+        $email = trim($payload->getString('email', $payload->getString('_username')));
+        $password = $payload->getString('password', $payload->getString('_password'));
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
@@ -46,11 +48,15 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
             throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
         }
 
+        if ($user && !$user->isVerified()) {
+            throw new CustomUserMessageAuthenticationException('Please verify your email address before logging in.');
+        }
+
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new PasswordCredentials($password),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge('authenticate', $payload->getString('_csrf_token')),
                 new RememberMeBadge(),
             ]
         );
@@ -58,15 +64,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // Update last login time
         $user = $token->getUser();
-        if ($user instanceof User) {
-            $user->setLastLogin(new \DateTime());
-            $this->entityManager->flush();
-            
-            // Log the login activity
-            $this->activityLogger->logLogin($user);
-        }
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);

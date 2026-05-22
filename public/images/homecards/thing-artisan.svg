@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Artisan coffee beans">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b2319"/>
+      <stop offset="100%" stop-color="#6a3d2a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <ellipse cx="390" cy="430" rx="90" ry="62" fill="#9f643f"/>
+  <path d="M390 372v116" stroke="#7f4a2d" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="600" cy="450" rx="94" ry="66" fill="#a56a43"/>
+  <path d="M600 390v120" stroke="#814d31" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="820" cy="420" rx="88" ry="60" fill="#8f5a38"/>
+  <path d="M820 364v112" stroke="#704227" stroke-width="12" stroke-linecap="round"/>
+</svg>

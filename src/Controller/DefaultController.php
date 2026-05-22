@@ -8,10 +8,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
-    #[Route('/', name: 'home')]
+    #[Route('/login-redirect', name: 'home')]
     public function index(): Response
     {
-        // Redirect root (/) to the login page
+        // Optional helper route to redirect explicitly to login.
         return $this->redirectToRoute('app_login');
     }
 }
