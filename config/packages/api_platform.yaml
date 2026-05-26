@@ -5,9 +5,6 @@ api_platform:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
-    docs:
-        enabled: true
-        path: '/api/docs'
     formats:
         jsonld: ['application/ld+json']
         json: ['application/json']
@@ -15,3 +12,4 @@ api_platform:
     error_formats:
         jsonproblem: ['application/problem+json']
         jsonld: ['application/ld+json']
+    enable_docs: true
