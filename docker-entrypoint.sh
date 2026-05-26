@@ -107,6 +107,12 @@ php bin/console doctrine:query:sql "SELECT 1 FROM user LIMIT 1" 2>&1 > /dev/null
 	php bin/console doctrine:schema:update --force --no-interaction 2>&1 || true
 }
 
+# Seed test users for development/testing
+echo "Seeding test users..."
+php bin/console app:seed:users --no-interaction 2>&1 || {
+	echo "⚠️  Could not seed test users (may already exist)"
+}
+
 echo "Loading test data (fixtures)..."
 # Fixtures bundle not available - skipping fixture loading
 # The app can work with empty database
