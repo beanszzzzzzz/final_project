@@ -100,10 +100,9 @@ if ! php bin/console doctrine:migrations:migrate --no-interaction --allow-no-mig
 	
 	# Get list of all migration files and mark them as done
 	for migration in migrations/Version*.php; do
-		filename=$(basename "$migration")
-		classname="DoctrineMigrations\\${filename%.php}"
-		echo "Marking $classname as executed..."
-		php bin/console doctrine:migrations:version "$classname" --add --no-interaction 2>&1 || true
+		filename=$(basename "$migration" .php)
+		echo "Marking $filename as executed..."
+		php bin/console doctrine:migrations:version "$filename" --add --no-interaction 2>&1 || true
 	done
 	
 	# Now try migrations again with already-executed marker
