@@ -34,7 +34,7 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /var/www/html
 
 # Enable Apache modules and ensure only one MPM is loaded
-RUN a2dismod mpm_event mpm_worker || true && \
+RUN a2dismod mpm_event mpm_worker mpm_prefork || true && \
     a2enmod mpm_prefork rewrite
 
 # Configure Apache
