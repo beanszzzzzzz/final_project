@@ -3,8 +3,23 @@
 namespace App\Entity;
 
 use App\Repository\StockRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Post(security: "is_granted('ROLE_STAFF')"),
+        new Put(security: "is_granted('ROLE_STAFF')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ]
+)]
 #[ORM\Entity(repositoryClass: StockRepository::class)]
 class Stock
 {

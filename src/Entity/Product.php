@@ -3,11 +3,26 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Put(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ]
+)]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'product')]
 class Product

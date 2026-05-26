@@ -3,6 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,6 +16,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Post(security: "is_granted('ROLE_STAFF')"),
+        new Put(security: "is_granted('ROLE_STAFF')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ]
+)]
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {

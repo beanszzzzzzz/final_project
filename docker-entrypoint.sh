@@ -66,6 +66,13 @@ php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migratio
 	# Continue anyway - the app may still work
 }
 
+echo "Loading test data (fixtures)..."
+# Try to load fixtures if available (will fail gracefully if not in prod)
+php bin/console doctrine:fixtures:load --no-interaction --append 2>&1 || {
+	echo "⚠️  Fixtures not available or already loaded"
+	# Continue - app can work without fixtures
+}
+
 echo "Checking database connection..."
 php bin/console doctrine:query:sql "SELECT 1" 2>&1 | head -5 || {
 	echo "Warning: Database connection check failed"
