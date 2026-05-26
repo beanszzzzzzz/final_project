@@ -86,41 +86,25 @@ wait_for_database
 # First, check if migrations table exists, if not create it
 echo "Initializing migration tracking..."
 php bin/console doctrine:migrations:sync-metadata-storage --no-interaction 2>&1 || {
-	echo "⚠️  Could not sync migration metadata (may not exist yet)"
+	echo "⚠️  Could not sync migration metadata"
 }
 
-# Try to run all migrations
-echo "Attempting to run all pending migrations..."
-if ! php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1; then
-	echo "⚠️  Migration failed - attempting to resolve..."
-	
-	# If migration fails due to table already existing, it's likely a partial migration
-	# Try to recover by marking all known migrations as executed
-	echo "Attempting migration recovery: marking all migrations as executed..."
-	
-	# Get list of all migration files and mark them as done
-	for migration in migrations/Version*.php; do
-		filename=$(basename "$migration" .php)
-		echo "Marking $filename as executed..."
-		php bin/console doctrine:migrations:version "$filename" --add --no-interaction 2>&1 || true
-	done
-	
-	# Now try migrations again with already-executed marker
-	echo "Retrying migrations after recovery..."
-	php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1 || {
-		echo "⚠️  Migration still had issues but app should be functional"
+# Try to run all migrations - but don't fail the entire startup
+echo "Attempting to run pending migrations..."
+php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1 || {
+	echo "⚠️  Migrations had issues - attempting schema update fallback..."
+	# If migrations fail, try to update schema directly
+	php bin/console doctrine:schema:update --force --no-interaction 2>&1 || {
+		echo "⚠️  Schema update also failed - app will attempt to continue"
 	}
-fi
-
-echo "Verifying user table schema..."
-# Ensure user table has all required columns
-php bin/console doctrine:query:sql "SHOW COLUMNS FROM user" 2>&1 | grep -E "(email|roles|password|is_active)" > /dev/null || {
-	echo "⚠️  User table appears to be missing columns - running schema update..."
 }
 
-# Verify user table has the required columns for the User entity
-php bin/console doctrine:query:sql "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='user' AND TABLE_SCHEMA=DATABASE() AND COLUMN_NAME IN ('is_verified', 'verification_token', 'verified_at')" 2>&1 | grep -q "is_verified" || {
-	echo "⚠️  User table missing is_verified column - it will be created by migration"
+# Final check: Verify critical tables exist
+echo "Verifying critical database tables..."
+php bin/console doctrine:query:sql "SELECT 1 FROM user LIMIT 1" 2>&1 > /dev/null || {
+	echo "⚠️  User table does not exist or is inaccessible"
+	echo "Attempting to create via schema update..."
+	php bin/console doctrine:schema:update --force --no-interaction 2>&1 || true
 }
 
 echo "Loading test data (fixtures)..."
