@@ -27,6 +27,9 @@ COPY docker-entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r$//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Copy Apache config
+COPY apache-symfony.conf /tmp/apache-symfony.conf
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 

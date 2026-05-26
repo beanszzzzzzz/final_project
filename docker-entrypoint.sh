@@ -23,6 +23,11 @@ if ! grep -q "^LoadModule mpm_prefork_module" /etc/apache2/mods-enabled/mpm_pref
 	ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 fi
 
+# Add Symfony directory config to Apache if not already present
+if ! grep -q "Directory /var/www/html/public" /etc/apache2/sites-enabled/000-default.conf; then
+	cat /tmp/apache-symfony.conf >> /etc/apache2/sites-enabled/000-default.conf
+fi
+
 sed -i "s/^Listen 80$/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-enabled/000-default.conf
@@ -38,5 +43,20 @@ if [ -z "${DATABASE_URL:-}" ]; then
 	exit 1
 fi
 
+echo "Database URL: ${DATABASE_URL}" | sed 's/:.*@/:***@/g'  # Log URL with password redacted
+echo ""
+
+echo "Running database migrations..."
+php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1 || {
+	echo "Warning: Migration command encountered an issue"
+	# Don't exit - try to continue anyway
+}
+
+echo "Checking database connection..."
+php bin/console doctrine:query:sql "SELECT 1" 2>&1 | head -5 || {
+	echo "Warning: Database connection check failed"
+}
+
+echo ""
 echo "Starting Apache..."
 exec apache2-foreground
