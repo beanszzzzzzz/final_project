@@ -20,6 +20,14 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        api:
+            pattern: ^/api/
+            stateless: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\JwtAuthenticator
+            entry_point: App\Security\JwtAuthenticator
+
         main:
             lazy: true
             provider: app_user_provider
@@ -40,14 +48,23 @@ security:
                 always_remember_me: false
 
     access_control:
-        # Public routes
+        # Public API endpoints
+        - { path: ^/api/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify-email/, roles: PUBLIC_ACCESS }
+        
+        # Public web routes
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/verify-email/, roles: PUBLIC_ACCESS }
         - { path: ^/connect/google$, roles: PUBLIC_ACCESS }
         - { path: ^/connect/google/check$, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/register$, roles: PUBLIC_ACCESS }
-        - { path: ^/api/login$, roles: PUBLIC_ACCESS }
+        
+        # Protected API endpoints
+        - { path: ^/api/, roles: ROLE_USER }
+        
+        # Protected web routes
+        - { path: ^/, roles: ROLE_USER }
         - { path: ^/api/verify-email/, roles: PUBLIC_ACCESS }
 
         # Customer self-service API routes

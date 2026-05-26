@@ -4,6 +4,6 @@
         "builder": "dockerfile"
     },
     "deploy": {
-        "releaseCommand": "php bin/console doctrine:migrations:migrate -n --no-interaction"
+        "startCommand": ""
     }
 }

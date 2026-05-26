@@ -1,7 +1,17 @@
 api_platform:
-    title: Hello API Platform
+    title: BinsCafe API
     version: 1.0.0
     defaults:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+    docs:
+        enabled: true
+        path: '/api/docs'
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+        html: ['text/html']
+    error_formats:
+        jsonproblem: ['application/problem+json']
+        jsonld: ['application/ld+json']

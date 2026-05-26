@@ -1,82 +1,158 @@
-# BinsCafe - Login & Test Credentials
+# BinsCafe API - JWT Authentication & CRUD Operations Guide
 
-## Test Accounts
+## JWT Authentication
 
-Once the app deploys and fixtures load, you can use these test accounts:
+The API uses JWT (JSON Web Token) authentication with HS256 algorithm. All protected API endpoints require an `Authorization: Bearer {token}` header.
 
-### Admin Account
-- **Email**: `admin@binscafe.com`
-- **Password**: `Admin123!`
-- **Access**: Full admin access, can create/edit/delete all resources
+### JWT Configuration
+- **Algorithm**: HS256
+- **Expiration**: 24 hours (configurable)
+- **Secret**: Configured via `JWT_SECRET` environment variable
 
-### Staff Account
-- **Email**: `staff@binscafe.com`
-- **Password**: `Staff123!`
-- **Access**: Staff access, can manage products, stock, and orders
+**⚠️ Important**: On Railway, set `JWT_SECRET` in the dashboard with a strong random value.
 
-### Customer Account
-- **Email**: `customer@binscafe.com`
-- **Password**: `Customer123!`
-- **Access**: Basic customer access, can view products and place orders
+## Test Account Credentials
 
-## Login Page
+Automatically loaded on deployment:
 
-Visit: `/login` (or `/` which redirects to login)
+| Email | Password | Role | Access Level |
+|-------|----------|------|--------------|
+| admin@binscafe.com | Admin123! | ROLE_ADMIN | Full admin access |
+| staff@binscafe.com | Staff123! | ROLE_STAFF | Staff operations |
+| customer@binscafe.com | Customer123! | ROLE_USER | Customer access |
 
-## API Endpoints (For CRUD Operations)
+## Quick Start
 
-### Products
-- **GET** `/api/products` - List all products
-- **POST** `/api/products` - Create product (Staff+)
-- **PUT** `/api/products/{id}` - Update product (Staff+)
-- **DELETE** `/api/products/{id}` - Delete product (Admin)
-
-### Customers
-- **GET** `/api/customers` - List all customers
-- **POST** `/api/customers` - Create customer (Staff+)
-- **PUT** `/api/customers/{id}` - Update customer (Staff+)
-- **DELETE** `/api/customers/{id}` - Delete customer (Admin)
-
-### Orders
-- **GET** `/api/orders` - List all orders
-- **POST** `/api/orders` - Create order
-- **PUT** `/api/orders/{id}` - Update order
-- **DELETE** `/api/orders/{id}` - Delete order
-
-### Stock
-- **GET** `/api/stocks` - List all stock
-- **POST** `/api/stocks` - Create stock (Staff+)
-- **PUT** `/api/stocks/{id}` - Update stock (Staff+)
-- **DELETE** `/api/stocks/{id}` - Delete stock (Admin)
-
-## Example API Call (with cURL)
+### 1. Login & Get Token
 
 ```bash
-# Login to get authentication token
-curl -X POST http://localhost/api/login \
+curl -X POST http://localhost:8080/api/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@binscafe.com","password":"Admin123!"}'
-
-# Create a product (as Staff/Admin)
-curl -X POST http://localhost/api/products \
-  -H "Content-Type: application/ld+json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
-    "name": "Coffee",
-    "category": "Beverages",
-    "price": 4.99
+    "email": "admin@binscafe.com",
+    "password": "Admin123!"
   }'
+```
+
+**Response**:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "admin@binscafe.com",
+    "roles": ["ROLE_ADMIN"],
+    "verified": true
+  }
+}
+```
+
+### 2. Use Token in Requests
+
+```bash
+curl -X GET http://localhost:8080/api/products \
+  -H "Authorization: Bearer {TOKEN}"
+```
+
+## API Endpoints
+
+### Products
+- **GET** `/api/products` - List all (public)
+- **GET** `/api/products/{id}` - Get one (public)
+- **POST** `/api/products` - Create (ROLE_ADMIN)
+- **PUT** `/api/products/{id}` - Update (ROLE_ADMIN)
+- **DELETE** `/api/products/{id}` - Delete (ROLE_ADMIN)
+
+### Customers
+- **GET** `/api/customers` - List all (public)
+- **GET** `/api/customers/{id}` - Get one (public)
+- **POST** `/api/customers` - Create (ROLE_STAFF)
+- **PUT** `/api/customers/{id}` - Update (ROLE_STAFF)
+- **DELETE** `/api/customers/{id}` - Delete (ROLE_ADMIN)
+
+### Stock
+- **GET** `/api/stocks` - List all (public)
+- **GET** `/api/stocks/{id}` - Get one (public)
+- **POST** `/api/stocks` - Create (ROLE_STAFF)
+- **PUT** `/api/stocks/{id}` - Update (ROLE_STAFF)
+- **DELETE** `/api/stocks/{id}` - Delete (ROLE_ADMIN)
+
+### Orders
+- **GET** `/api/orders` - List all (public)
+- **GET** `/api/orders/{id}` - Get one (public)
+- **POST** `/api/orders` - Create (ROLE_USER+)
+- **PUT** `/api/orders/{id}` - Update (ROLE_USER+)
+- **DELETE** `/api/orders/{id}` - Delete (ROLE_ADMIN)
+
+### Authentication
+- **POST** `/api/login` - Get JWT token
+- **POST** `/api/register` - Register new user
+- **GET** `/api/me` - Get current user info (ROLE_USER+)
+
+## Example CRUD Operations
+
+### Create Product (Admin)
+```bash
+curl -X POST http://localhost:8080/api/products \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Coffee Beans",
+    "category": "Supplies",
+    "price": 12.99
+  }'
+```
+
+### Update Product (Admin)
+```bash
+curl -X PUT http://localhost:8080/api/products/1 \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Premium Coffee Beans",
+    "price": 15.99
+  }'
+```
+
+### Create Customer (Staff)
+```bash
+curl -X POST http://localhost:8080/api/customers \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "555-0123",
+    "address": "123 Main St"
+  }'
+```
+
+### Delete Resource (Admin)
+```bash
+curl -X DELETE http://localhost:8080/api/products/1 \
+  -H "Authorization: Bearer {TOKEN}"
 ```
 
 ## Troubleshooting
 
-If login doesn't work:
-1. Check that fixtures loaded: "Loading test data (fixtures)..." in logs
-2. Verify DATABASE_URL is set on Railway
-3. Check that migrations ran successfully
-4. Ensure cache directories have proper permissions
+| Issue | Solution |
+|-------|----------|
+| "Invalid credentials" | Verify email/password are correct, check fixtures loaded |
+| "Invalid or expired token" | Token may have expired (24h), get new one from login endpoint |
+| "No Bearer token provided" | Include `Authorization: Bearer {TOKEN}` header |
+| "Unauthorized" on protected endpoint | Verify user role matches endpoint requirement |
+| Database connection failed | Check DATABASE_URL env var, MySQL plugin on Railway |
+| Fixtures not loading | Check logs for "Loading test data (fixtures)..." message |
 
-If CRUD operations fail:
-1. Verify you're authenticated (use Staff or Admin account)
-2. Check user role/permissions
-3. Ensure all required fields are included in POST/PUT requests
+## Deployment on Railway
+
+1. Set environment variables in Railway dashboard:
+   - `JWT_SECRET=` (auto-generated if not set)
+   - `JWT_EXPIRATION_HOURS=24`
+
+2. Database is auto-injected as `DATABASE_URL`
+
+3. On deployment:
+   - Migrations run automatically
+   - Test fixtures load automatically
+   - Apache starts serving on assigned PORT

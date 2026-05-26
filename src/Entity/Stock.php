@@ -97,7 +97,7 @@ class Stock
     public function getStatus(): string
     {
         if ($this->quantity > $this->reorderLevel) {
-            return '✅ In Stock ('.$this->quantity.' > '.$this->reorderLevel.', okay pa!)';
+            return '✅ In Stock (' . $this->quantity . ' > ' . $this->reorderLevel . ', okay pa!)';
         }
 
         if ($this->quantity == 0) {

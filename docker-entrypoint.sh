@@ -12,6 +12,12 @@ if [ -z "${APP_SECRET:-}" ]; then
 	export APP_SECRET=$(php -r "echo bin2hex(random_bytes(16));")
 fi
 
+# Ensure JWT_SECRET is set; generate a random one if missing
+if [ -z "${JWT_SECRET:-}" ]; then
+	echo "JWT_SECRET not set — generating secure secret for runtime"
+	export JWT_SECRET=$(php -r "echo bin2hex(random_bytes(32));")
+fi
+
 # Railway assigns a runtime PORT; make Apache listen on it instead of the image default.
 export PORT=${PORT:-8080}
 

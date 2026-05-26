@@ -7,6 +7,8 @@ parameters:
     env(CORS_ALLOW_ORIGIN): '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
     env(MERCURE_URL): 'http://127.0.0.1:3000/.well-known/mercure'
     env(MERCURE_JWT): 'dev_mercure_secret_key_0123456789abcdefghijklmnop'
+    env(JWT_SECRET): 'your-secret-key-change-in-env'
+    env(JWT_EXPIRATION_HOURS): '24'
 
 services:
     # default configuration for services in *this* file
@@ -18,6 +20,12 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+
+    # Configure JWT Token Service
+    App\Service\JwtTokenService:
+        arguments:
+            - '%env(JWT_SECRET)%'
+            - '%env(int:JWT_EXPIRATION_HOURS)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
