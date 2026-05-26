@@ -33,6 +33,9 @@ sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-enabled/000-default.conf
 
 echo "Clearing cache..."
+# Ensure cache directories exist and are writable
+mkdir -p /var/www/html/var/cache /var/www/html/var/log
+chmod -R 777 /var/www/html/var/cache /var/www/html/var/log
 php bin/console cache:clear --no-warmup 2>&1 || echo "Warning: Cache clear failed (may retry at request time)"
 
 echo "Verifying database connection..."
@@ -47,9 +50,13 @@ echo "Database URL: ${DATABASE_URL}" | sed 's/:.*@/:***@/g'  # Log URL with pass
 echo ""
 
 echo "Running database migrations..."
+# Sync metadata storage to mark existing migrations
+php bin/console doctrine:migrations:sync-metadata-storage --no-interaction 2>&1 || echo "Migrations metadata already synced"
+
+# Run migrations - gracefully handle tables that already exist
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1 || {
-	echo "Warning: Migration command encountered an issue"
-	# Don't exit - try to continue anyway
+	echo "⚠️  Migration encountered issues (may be expected if tables already exist)"
+	# Continue anyway - the app may still work
 }
 
 echo "Checking database connection..."

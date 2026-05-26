@@ -33,8 +33,11 @@ COPY apache-symfony.conf /tmp/apache-symfony.conf
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html
+# Set permissions and ensure var directories exist with proper permissions
+RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
+    chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html/var && \
+    chmod -R 775 /var/www/html/var/cache /var/www/html/var/log
 
 # Fix Apache MPM conflict: remove all MPM modules except prefork
 RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf && \
