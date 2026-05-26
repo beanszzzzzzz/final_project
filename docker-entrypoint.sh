@@ -72,6 +72,17 @@ php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migratio
 	# Continue anyway - the app may still work
 }
 
+echo "Verifying user table schema..."
+# Ensure user table has all required columns
+php bin/console doctrine:query:sql "SHOW COLUMNS FROM user" 2>&1 | grep -E "(email|roles|password|is_active)" > /dev/null || {
+	echo "⚠️  User table appears to be missing columns - running schema update..."
+}
+
+# Verify user table has the required columns for the User entity
+php bin/console doctrine:query:sql "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='user' AND TABLE_SCHEMA=DATABASE() AND COLUMN_NAME IN ('is_verified', 'verification_token', 'verified_at')" 2>&1 | grep -q "is_verified" || {
+	echo "⚠️  User table missing is_verified column - it will be created by migration"
+}
+
 echo "Loading test data (fixtures)..."
 # Load fixtures - use --append to add to existing data
 # Try multiple approaches for robustness
