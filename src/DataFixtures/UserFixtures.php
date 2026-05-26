@@ -18,11 +18,15 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $verifiedAt = new \DateTimeImmutable();
+
         // Create ADMIN user
         $admin = new User();
         $admin->setEmail('admin@binscafe.com');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setIsActive(true);
+        $admin->setIsVerified(true);
+        $admin->setVerifiedAt($verifiedAt);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $admin,
             'Admin123!'
@@ -35,6 +39,8 @@ class UserFixtures extends Fixture
         $staff->setEmail('staff@binscafe.com');
         $staff->setRoles(['ROLE_STAFF']);
         $staff->setIsActive(true);
+        $staff->setIsVerified(true);
+        $staff->setVerifiedAt($verifiedAt);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $staff,
             'Staff123!'
@@ -47,6 +53,8 @@ class UserFixtures extends Fixture
         $customer->setEmail('customer@binscafe.com');
         $customer->setRoles(['ROLE_USER']);
         $customer->setIsActive(true);
+        $customer->setIsVerified(true);
+        $customer->setVerifiedAt($verifiedAt);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $customer,
             'Customer123!'

@@ -21,13 +21,13 @@ services:
       PMA_USER: dguzman
       PMA_PASSWORD: 1234
     ports:
-      - "8080:80"
+      - "${PHPMYADMIN_PORT:-8080}:80"
     depends_on:
       - mysql
     networks:
       - jimzcafe_default
 
-###> symfony/mercure-bundle ###
+  ###> symfony/mercure-bundle ###
   mercure:
     image: dunglas/mercure
     restart: unless-stopped
@@ -42,7 +42,7 @@ services:
     # Comment the following line to disable the development mode
     command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost/healthz"]
+      test: [ "CMD", "curl", "-f", "https://localhost/healthz" ]
       timeout: 5s
       retries: 5
       start_period: 60s
@@ -53,10 +53,10 @@ services:
 
 volumes:
 
-###> symfony/mercure-bundle ###
+  ###> symfony/mercure-bundle ###
   mercure_data:
-  mercure_config:
-###< symfony/mercure-bundle ###
+  mercure_config: ###< symfony/mercure-bundle ###
+
   mysql_data:
 
 networks:
