@@ -28,7 +28,15 @@ sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-enabled/000-default.conf
 
 echo "Clearing cache..."
-php bin/console cache:clear --no-warmup || true
+php bin/console cache:clear --no-warmup 2>&1 || echo "Warning: Cache clear failed (may retry at request time)"
+
+echo "Verifying database connection..."
+if [ -z "${DATABASE_URL:-}" ]; then
+	echo "ERROR: DATABASE_URL environment variable not set!"
+	echo "Please configure DATABASE_URL in Railway dashboard or environment"
+	echo "Format: mysql://user:password@host:port/database"
+	exit 1
+fi
 
 echo "Starting Apache..."
 exec apache2-foreground
