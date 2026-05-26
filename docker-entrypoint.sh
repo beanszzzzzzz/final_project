@@ -66,7 +66,7 @@ echo "Running database migrations..."
 # Sync metadata storage to mark existing migrations
 php bin/console doctrine:migrations:sync-metadata-storage --no-interaction 2>&1 || echo "Migrations metadata already synced"
 
-# Run migrations - gracefully handle tables that already exist
+# Run migrations - allow them to fail gracefully if tables already exist
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1 || {
 	echo "⚠️  Migration encountered issues (may be expected if tables already exist)"
 	# Continue anyway - the app may still work
