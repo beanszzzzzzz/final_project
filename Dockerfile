@@ -33,8 +33,9 @@ RUN composer install --no-dev --optimize-autoloader
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Enable Apache modules
-RUN a2enmod rewrite
+# Enable Apache modules and ensure only one MPM is loaded
+RUN a2dismod mpm_event mpm_worker || true && \
+    a2enmod mpm_prefork rewrite
 
 # Configure Apache
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-enabled/000-default.conf
