@@ -33,10 +33,17 @@ sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 sed -i "s/:80>/:${PORT}>/g" /etc/apache2/sites-enabled/000-default.conf
 
 echo "Clearing cache..."
-# Ensure cache directories exist and are writable
+# Ensure cache directories exist and are fully writable by www-data
 mkdir -p /var/www/html/var/cache /var/www/html/var/log
-chmod -R 777 /var/www/html/var/cache /var/www/html/var/log
-php bin/console cache:clear --no-warmup 2>&1 || echo "Warning: Cache clear failed (may retry at request time)"
+chown -R www-data:www-data /var/www/html/var
+chmod -R u+rwx,g+rwx,o+rx /var/www/html/var
+
+# Try to clear cache - non-critical if it fails
+php bin/console cache:clear --no-warmup 2>&1 || {
+	echo "⚠️  Cache clear had issues, but continuing..."
+	# Ensure directories are writable anyway
+	chmod -R 777 /var/www/html/var/cache /var/www/html/var/log
+}
 
 echo "Verifying database connection..."
 if [ -z "${DATABASE_URL:-}" ]; then
@@ -65,5 +72,11 @@ php bin/console doctrine:query:sql "SELECT 1" 2>&1 | head -5 || {
 }
 
 echo ""
+echo "Final permission check before starting Apache..."
+# Ensure ALL var subdirectories are writable by www-data
+chown -R www-data:www-data /var/www/html/var
+find /var/www/html/var -type d -exec chmod 777 {} \;
+find /var/www/html/var -type f -exec chmod 666 {} \;
+
 echo "Starting Apache..."
 exec apache2-foreground

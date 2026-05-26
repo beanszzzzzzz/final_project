@@ -36,15 +36,18 @@ RUN composer install --no-dev --optimize-autoloader
 # Set permissions and ensure var directories exist with proper permissions
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
     chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html/var && \
-    chmod -R 775 /var/www/html/var/cache /var/www/html/var/log
+    find /var/www/html -type d -exec chmod 755 {} \; && \
+    find /var/www/html -type f -exec chmod 644 {} \; && \
+    chmod 775 /var/www/html/var /var/www/html/var/cache /var/www/html/var/log && \
+    chmod 755 /var/www/html/public
 
 # Fix Apache MPM conflict: remove all MPM modules except prefork
 RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf && \
     a2enmod mpm_prefork rewrite
 
-# Configure Apache
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-enabled/000-default.conf
+# Configure Apache for Symfony
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-enabled/000-default.conf && \
+    sed -i '/<VirtualHost/a\    ServerName localhost' /etc/apache2/sites-enabled/000-default.conf
 
 # Expose port
 EXPOSE 80
