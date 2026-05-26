@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env.local
+.env.*.local
+/var/
+/node_modules/
+/vendor/
+.DS_Store
+*.log
