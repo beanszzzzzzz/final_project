@@ -17,6 +17,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Allow Composer to run as root and use plugins
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_ALLOW_PLUGINS=1
+ENV APP_ENV=prod
 
 # Copy application
 COPY . .
