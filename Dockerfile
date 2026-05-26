@@ -33,8 +33,8 @@ RUN composer install --no-dev --optimize-autoloader
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Enable Apache modules and ensure only one MPM is loaded
-RUN a2dismod mpm_event mpm_worker mpm_prefork || true && \
+# Fix Apache MPM conflict: remove all MPM modules except prefork
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf && \
     a2enmod mpm_prefork rewrite
 
 # Configure Apache
