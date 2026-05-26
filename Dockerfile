@@ -24,6 +24,7 @@ COPY . .
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Install PHP dependencies
