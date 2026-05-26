@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Allow Composer to run as root and use plugins
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_ALLOW_PLUGINS=1
+
 # Copy application
 COPY . .
 
@@ -22,7 +26,7 @@ COPY docker-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Install PHP dependencies
-RUN COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_ALLOW_PLUGINS=1 composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
