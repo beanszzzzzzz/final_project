@@ -21,11 +21,5 @@ services:
     App\:
         resource: '../src/'
 
-    # Configure JWT Token Service
-    App\Service\JwtTokenService:
-        arguments:
-            - '%env(JWT_SECRET)%'
-            - '%env(int:JWT_EXPIRATION_HOURS)%'
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -13,9 +13,13 @@ class JwtTokenService
     private string $secret;
     private int $expirationTime;
 
-    public function __construct(string $jwtSecret = 'your-secret-key-change-in-env', int $expirationHours = 24)
+    public function __construct()
     {
-        $this->secret = $jwtSecret;
+        // Read JWT_SECRET from environment, fall back to default
+        $this->secret = $_ENV['JWT_SECRET'] ?? $_SERVER['JWT_SECRET'] ?? 'your-secret-key-change-in-env';
+        
+        // Read JWT_EXPIRATION_HOURS from environment, fall back to 24
+        $expirationHours = (int)($_ENV['JWT_EXPIRATION_HOURS'] ?? $_SERVER['JWT_EXPIRATION_HOURS'] ?? 24);
         $this->expirationTime = $expirationHours * 3600; // Convert hours to seconds
     }
 
