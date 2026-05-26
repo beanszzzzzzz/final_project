@@ -21,6 +21,24 @@ fi
 # Railway assigns a runtime PORT; make Apache listen on it instead of the image default.
 export PORT=${PORT:-8080}
 
+wait_for_database() {
+	local attempt=1
+	local max_attempts=30
+
+	while [ "$attempt" -le "$max_attempts" ]; do
+		if php bin/console doctrine:query:sql "SELECT 1" >/dev/null 2>&1; then
+			return 0
+		fi
+
+		echo "Waiting for database to become available... ($attempt/$max_attempts)"
+		attempt=$((attempt + 1))
+		sleep 2
+	done
+
+	echo "ERROR: Database did not become ready in time."
+	return 1
+}
+
 # Fix Apache MPM conflict at runtime before Apache starts
 echo "Fixing Apache MPM configuration..."
 rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf
@@ -63,6 +81,7 @@ echo "Database URL: ${DATABASE_URL}" | sed 's/:.*@/:***@/g'  # Log URL with pass
 echo ""
 
 echo "Running database migrations..."
+wait_for_database
 # Sync metadata storage to mark existing migrations
 php bin/console doctrine:migrations:sync-metadata-storage --no-interaction 2>&1 || echo "Migrations metadata already synced"
 

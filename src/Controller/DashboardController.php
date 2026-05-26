@@ -103,8 +103,15 @@ final class DashboardController extends AbstractController
     #[Route('/products', name: 'app_dashboard_products', methods: ['GET'])]
     public function products(ProductRepository $productRepository): Response
     {
+        try {
+            $products = $productRepository->findAll();
+        } catch (\Throwable $exception) {
+            $this->addFlash('error', 'The product list could not be loaded because the database is unavailable.');
+            $products = [];
+        }
+
         return $this->render('product/index.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $products,
         ]);
     }
 
@@ -117,16 +124,20 @@ final class DashboardController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($product);
-            $entityManager->flush();
+            try {
+                $entityManager->persist($product);
+                $entityManager->flush();
 
-            $this->activityLogger->logCreate(
-                'Product',
-                (int) $product->getId(),
-                (string) $product->getName()
-            );
+                $this->activityLogger->logCreate(
+                    'Product',
+                    (int) $product->getId(),
+                    (string) $product->getName()
+                );
 
-            return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
+            } catch (\Throwable $exception) {
+                $this->addFlash('error', 'Product could not be saved because the database connection failed.');
+            }
         }
 
         return $this->render('product/new.html.twig', [
@@ -152,15 +163,19 @@ final class DashboardController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            try {
+                $entityManager->flush();
 
-            $this->activityLogger->logUpdate(
-                'Product',
-                (int) $product->getId(),
-                (string) $product->getName()
-            );
+                $this->activityLogger->logUpdate(
+                    'Product',
+                    (int) $product->getId(),
+                    (string) $product->getName()
+                );
 
-            return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
+            } catch (\Throwable $exception) {
+                $this->addFlash('error', 'Product could not be updated because the database connection failed.');
+            }
         }
 
         return $this->render('product/edit.html.twig', [

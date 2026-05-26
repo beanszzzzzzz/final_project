@@ -26,8 +26,15 @@ final class ProductController extends AbstractController
     #[Route(name: 'app_product_index', methods: ['GET'])]
     public function index(ProductRepository $productRepository): Response
     {
+        try {
+            $products = $productRepository->findAll();
+        } catch (\Throwable $exception) {
+            $this->addFlash('error', 'The product list could not be loaded because the database is unavailable.');
+            $products = [];
+        }
+
         return $this->render('product/index.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $products,
         ]);
     }
 
@@ -39,18 +46,22 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($product);
-            $entityManager->flush();
+            try {
+                $entityManager->persist($product);
+                $entityManager->flush();
 
-            // Log: Staff creates a record
-            $this->activityLogger->logCreate(
-                'Product',
-                $product->getId(),
-                $product->getName()
-            );
+                // Log: Staff creates a record
+                $this->activityLogger->logCreate(
+                    'Product',
+                    $product->getId(),
+                    $product->getName()
+                );
 
-            $this->addFlash('success', 'Product created successfully!');
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash('success', 'Product created successfully!');
+                return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Throwable $exception) {
+                $this->addFlash('error', 'Product could not be saved because the database connection failed.');
+            }
         }
 
         return $this->render('product/new.html.twig', [
@@ -74,17 +85,21 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            try {
+                $entityManager->flush();
 
-            // Log: Staff/Admin edits a record
-            $this->activityLogger->logUpdate(
-                'Product',
-                $product->getId(),
-                $product->getName()
-            );
+                // Log: Staff/Admin edits a record
+                $this->activityLogger->logUpdate(
+                    'Product',
+                    $product->getId(),
+                    $product->getName()
+                );
 
-            $this->addFlash('success', 'Product updated successfully!');
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash('success', 'Product updated successfully!');
+                return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Throwable $exception) {
+                $this->addFlash('error', 'Product could not be updated because the database connection failed.');
+            }
         }
 
         return $this->render('product/edit.html.twig', [
@@ -96,22 +111,26 @@ final class ProductController extends AbstractController
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
     public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->getPayload()->getString('_token'))) {
             // Store info before deletion
             $productName = $product->getName();
             $productId = $product->getId();
-            
-            $entityManager->remove($product);
-            $entityManager->flush();
 
-            // Log: Staff/Admin deletes a record
-            $this->activityLogger->logDelete(
-                'Product',
-                $productId,
-                $productName
-            );
+            try {
+                $entityManager->remove($product);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'Product deleted successfully!');
+                // Log: Staff/Admin deletes a record
+                $this->activityLogger->logDelete(
+                    'Product',
+                    $productId,
+                    $productName
+                );
+
+                $this->addFlash('success', 'Product deleted successfully!');
+            } catch (\Throwable $exception) {
+                $this->addFlash('error', 'Product could not be deleted because the database connection failed.');
+            }
         }
 
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);

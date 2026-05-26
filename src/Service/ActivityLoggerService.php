@@ -130,28 +130,33 @@ class ActivityLoggerService
             return; // Can't log without a user
         }
 
-        $activityLog = new ActivityLog();
-        
-        // Required fields
-        $activityLog->setUserId($user->getId());
-        $activityLog->setUsername($user->getEmail());
-        $activityLog->setRole($this->getUserPrimaryRole($user));
-        $activityLog->setAction($action);
-        $activityLog->setTargetData($targetData);
-        $activityLog->setDateTime(new \DateTime());
+        try {
+            $activityLog = new ActivityLog();
 
-        // Optional fields - Keep user relationship
-        $activityLog->setUser($user);
+            // Required fields
+            $activityLog->setUserId($user->getId());
+            $activityLog->setUsername($user->getEmail());
+            $activityLog->setRole($this->getUserPrimaryRole($user));
+            $activityLog->setAction($action);
+            $activityLog->setTargetData($targetData);
+            $activityLog->setDateTime(new \DateTime());
 
-        // Add IP and User Agent if available
-        $request = $this->requestStack->getCurrentRequest();
-        if ($request) {
-            $activityLog->setIpAddress($request->getClientIp());
-            $activityLog->setUserAgent($request->headers->get('User-Agent'));
+            // Optional fields - Keep user relationship
+            $activityLog->setUser($user);
+
+            // Add IP and User Agent if available
+            $request = $this->requestStack->getCurrentRequest();
+            if ($request) {
+                $activityLog->setIpAddress($request->getClientIp());
+                $activityLog->setUserAgent($request->headers->get('User-Agent'));
+            }
+
+            $this->entityManager->persist($activityLog);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            // Log the error but don't crash the application
+            error_log('Activity logging failed: ' . $e->getMessage());
         }
-
-        $this->entityManager->persist($activityLog);
-        $this->entityManager->flush();
     }
 
     /**
@@ -160,15 +165,15 @@ class ActivityLoggerService
     private function getUserPrimaryRole(User $user): string
     {
         $roles = $user->getRoles();
-        
+
         if (in_array('ROLE_ADMIN', $roles)) {
             return 'ROLE_ADMIN';
         }
-        
+
         if (in_array('ROLE_STAFF', $roles)) {
             return 'ROLE_STAFF';
         }
-        
+
         return 'ROLE_USER';
     }
 }

@@ -31,11 +31,21 @@ class LoginListener
             return;
         }
 
-        // Update last login time
-        $user->setLastLogin(new \DateTime());
-        $this->entityManager->flush();
+        try {
+            // Update last login time
+            $user->setLastLogin(new \DateTime());
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            // Log the error but don't crash the login process
+            error_log('Failed to update last login: ' . $e->getMessage());
+        }
 
         // Log the login activity
-        $this->activityLogger->logLogin($user);
+        try {
+            $this->activityLogger->logLogin($user);
+        } catch (\Exception $e) {
+            // Log the error but don't crash the login process
+            error_log('Failed to log login activity: ' . $e->getMessage());
+        }
     }
 }
