@@ -73,11 +73,14 @@ php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migratio
 }
 
 echo "Loading test data (fixtures)..."
-# Try to load fixtures if available (will fail gracefully if not in prod)
-php bin/console doctrine:fixtures:load --no-interaction --append 2>&1 || {
-	echo "⚠️  Fixtures not available or already loaded"
-	# Continue - app can work without fixtures
-}
+# Load fixtures - use --append to add to existing data
+# Try multiple approaches for robustness
+if php bin/console doctrine:fixtures:load --no-interaction --append 2>&1; then
+	echo "✓ Fixtures loaded successfully"
+else
+	echo "⚠️  Could not load fixtures (may already be loaded or not available in this environment)"
+	# This is not critical - the app can work with empty databases
+fi
 
 echo "Checking database connection..."
 php bin/console doctrine:query:sql "SELECT 1" 2>&1 | head -5 || {
