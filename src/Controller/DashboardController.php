@@ -19,9 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/dashboard')]
 final class DashboardController extends AbstractController
 {
-    public function __construct(private ActivityLoggerService $activityLogger)
-    {
-    }
+    public function __construct(private ActivityLoggerService $activityLogger) {}
 
     #[IsGranted('ROLE_STAFF')]
     #[Route(name: 'app_dashboard_index', methods: ['GET'])]
@@ -30,50 +28,59 @@ final class DashboardController extends AbstractController
         StockRepository $stockRepository,
         CustomerRepository $customerRepository,
         OrderRepository $orderRepository
-    ): Response
-    {
-        // Count total products
-        $totalProducts = $productRepository->count([]);
-        
-        // Get stock summary
-        $stockSummary = $stockRepository->getStockSummary();
-        $totalStocks = $stockSummary['totalItems'];
-        
-        // Count total customers
-        $totalCustomers = $customerRepository->count([]);
-        
-        // Get total revenue
-        $totalRevenue = $orderRepository->getTotalRevenue();
-        
-        // Get revenue change data
-        $revenueChangeData = $orderRepository->getRevenueChangePercentage();
-        $todayRevenue = $revenueChangeData['today'];
-        $yesterdayRevenue = $revenueChangeData['yesterday'];
-        $revenueChange = $revenueChangeData['change'];
-        $isRevenueIncrease = $revenueChangeData['isIncrease'];
-        
-        // Get sales data for chart (last 7 days)
-        $salesData = $orderRepository->getSalesDataLast7Days();
-        
-        // Get recent orders
-        $recentOrders = $orderRepository->getRecentOrders(5);
-        
-        // Get today's orders count
-        $todayOrdersCount = $orderRepository->countTodayOrders();
-        
-        // Get recent products (last 5)
-        $recentProducts = $productRepository->findBy(
-            [],
-            ['id' => 'DESC'],
-            5
-        );
-        
-        // Get low stock items (quantity <= reorder level)
-        $lowStockItems = $stockRepository->findLowStockItems(5);
-        
-        // Get out of stock items
-        $outOfStockItems = $stockRepository->findOutOfStockItems(5);
-        
+    ): Response {
+        try {
+            // Count total products
+            $totalProducts = $productRepository->count([]) ?? 0;
+
+            // Get stock summary
+            $stockSummary = $stockRepository->getStockSummary() ?? ['totalItems' => 0];
+            $totalStocks = $stockSummary['totalItems'] ?? 0;
+
+            // Count total customers
+            $totalCustomers = $customerRepository->count([]) ?? 0;
+
+            // Get total revenue
+            $totalRevenue = $orderRepository->getTotalRevenue() ?? 0;
+
+            // Get revenue change data
+            $revenueChangeData = $orderRepository->getRevenueChangePercentage() ?? [];
+            $todayRevenue = $revenueChangeData['today'] ?? 0;
+            $yesterdayRevenue = $revenueChangeData['yesterday'] ?? 0;
+            $revenueChange = $revenueChangeData['change'] ?? 0;
+            $isRevenueIncrease = $revenueChangeData['isIncrease'] ?? false;
+
+            // Get sales data for chart (last 7 days)
+            $salesData = $orderRepository->getSalesDataLast7Days() ?? [];
+
+            // Get recent orders
+            $recentOrders = $orderRepository->getRecentOrders(5) ?? [];
+
+            // Get today's orders count
+            $todayOrdersCount = $orderRepository->countTodayOrders() ?? 0;
+
+            // Get recent products (last 5)
+            $recentProducts = $productRepository->findBy(
+                [],
+                ['id' => 'DESC'],
+                5
+            ) ?? [];
+
+            // Get low stock items (quantity <= reorder level)
+            $lowStockItems = $stockRepository->findLowStockItems(5) ?? [];
+
+            // Get out of stock items
+            $outOfStockItems = $stockRepository->findOutOfStockItems(5) ?? [];
+        } catch (\Exception $e) {
+            // If any query fails, use defaults - allow dashboard to load anyway
+            $totalProducts = $totalStocks = $totalCustomers = $totalRevenue = 0;
+            $todayRevenue = $yesterdayRevenue = $revenueChange = 0;
+            $isRevenueIncrease = false;
+            $stockSummary = ['totalItems' => 0];
+            $salesData = $recentOrders = $recentProducts = $lowStockItems = $outOfStockItems = [];
+            $todayOrdersCount = 0;
+        }
+
         return $this->render('dashboard/index.html.twig', [
             'totalProducts' => $totalProducts,
             'totalStocks' => $totalStocks,
@@ -161,5 +168,4 @@ final class DashboardController extends AbstractController
             'form' => $form,
         ]);
     }
-
 }
