@@ -26,8 +26,7 @@ class StaffGoogleAuthenticator extends OAuth2Authenticator
         private ClientRegistry $clientRegistry,
         private EntityManagerInterface $entityManager,
         private UrlGeneratorInterface $urlGenerator
-    ) {
-    }
+    ) {}
 
     public function supports(Request $request): ?bool
     {
@@ -54,37 +53,42 @@ class StaffGoogleAuthenticator extends OAuth2Authenticator
 
         return new SelfValidatingPassport(
             new UserBadge($email, function () use ($email) {
-                $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-
-                if (!$user) {
-                    $user = new User();
-                    $user->setEmail($email);
-                    $user->setRoles(['ROLE_STAFF']);
-                    $user->setIsActive(true);
-                    $user->setIsVerified(true);
-                    $user->setVerifiedAt(new \DateTime());
-                    $user->setPassword(password_hash(bin2hex(random_bytes(24)), PASSWORD_BCRYPT));
-
-                    $this->entityManager->persist($user);
-                    $this->entityManager->flush();
+                try {
+                    $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+                } catch (\Exception $e) {
+                    throw new CustomUserMessageAuthenticationException('Authentication service temporarily unavailable. Please try again later.');
                 }
 
-                if (!$user->isActive()) {
-                    throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
-                }
+                try {
+                    if (!$user) {
+                        $user = new User();
+                        $user->setEmail($email);
+                        $user->setRoles(['ROLE_STAFF']);
+                        $user->setIsActive(true);
+                        $user->setIsVerified(true);
+                        $user->setVerifiedAt(new \DateTime());
+                        $user->setPassword(password_hash(bin2hex(random_bytes(24)), PASSWORD_BCRYPT));
 
-                if (!in_array('ROLE_STAFF', $user->getRoles(), true) && !in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-                    $user->setRoles(['ROLE_STAFF']);
-                    $user->setIsVerified(true);
-                    $user->setVerifiedAt(new \DateTime());
-                    $this->entityManager->flush();
+                        $this->entityManager->persist($user);
+                        $this->entityManager->flush();
+                    }
+
+                    if (!$user->isActive()) {
+                        throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
+                    }
+
+                    if (!in_array('ROLE_STAFF', $user->getRoles(), true) && !in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                        $user->setRoles(['ROLE_STAFF']);
+                        $user->setIsVerified(true);
+                        $user->setVerifiedAt(new \DateTime());
+                        $this->entityManager->flush();
+                    }
+                } catch (\Exception $e) {
+                    throw new CustomUserMessageAuthenticationException('Authentication service temporarily unavailable. Please try again later.');
                 }
 
                 return $user;
-            }),
-            [
-                new RememberMeBadge(),
-            ]
+            })
         );
     }
 
@@ -95,8 +99,6 @@ class StaffGoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $request->getSession()->getFlashBag()->add('error', $exception->getMessageKey());
-
         return new RedirectResponse($this->urlGenerator->generate('app_login'));
     }
 

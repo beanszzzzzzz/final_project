@@ -28,8 +28,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private EntityManagerInterface $entityManager
-    ) {
-    }
+    ) {}
 
     public function authenticate(Request $request): Passport
     {
@@ -41,9 +40,13 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
-        // Check user status before authentication
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        
+        // Check user status before authentication. Protect against DB errors so login shows a friendly message
+        try {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        } catch (\Exception $e) {
+            throw new CustomUserMessageAuthenticationException('The authentication system is temporarily unavailable. Please try again later.');
+        }
+
         if ($user && !$user->isActive()) {
             throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
         }
@@ -73,17 +76,17 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         // Redirect based on role
         if ($user instanceof User) {
             $roles = $user->getRoles();
-            
+
             // Admin goes to dashboard
             if (in_array('ROLE_ADMIN', $roles)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
             }
-            
+
             // Staff goes to dashboard
             if (in_array('ROLE_STAFF', $roles)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
             }
-            
+
             // Customer goes to home page
             if (in_array('ROLE_USER', $roles)) {
                 return new RedirectResponse('/');

@@ -38,7 +38,11 @@ class JwtAuthenticator extends AbstractAuthenticator
         $token = substr($authHeader, 7); // Remove "Bearer " prefix
 
         // Verify token
-        $payload = $this->jwtTokenService->verifyToken($token);
+        try {
+            $payload = $this->jwtTokenService->verifyToken($token);
+        } catch (\Exception $e) {
+            throw new AuthenticationException('Invalid or expired token');
+        }
 
         if (!$payload) {
             throw new AuthenticationException('Invalid or expired token');
@@ -53,7 +57,12 @@ class JwtAuthenticator extends AbstractAuthenticator
 
         return new SelfValidatingPassport(
             new UserBadge($userId, function ($userId) {
-                return $this->userRepository->find($userId);
+                try {
+                    return $this->userRepository->find($userId);
+                } catch (\Exception $e) {
+                    // If DB is unavailable, treat as authentication failure
+                    return null;
+                }
             })
         );
     }
