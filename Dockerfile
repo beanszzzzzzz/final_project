@@ -17,6 +17,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy application
 COPY . .
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
@@ -32,5 +36,5 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /e
 # Expose port
 EXPOSE 80
 
-# Run migrations and start Apache
-CMD ["php", "bin/console", "doctrine:migrations:migrate", "-n", "--no-interaction"]
+# Run entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
