@@ -125,14 +125,9 @@ php bin/console doctrine:query:sql "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.C
 }
 
 echo "Loading test data (fixtures)..."
-# Load fixtures - use --append to add to existing data
-# Try multiple approaches for robustness
-if php bin/console doctrine:fixtures:load --no-interaction --append 2>&1; then
-	echo "✓ Fixtures loaded successfully"
-else
-	echo "⚠️  Could not load fixtures (may already be loaded or not available in this environment)"
-	# This is not critical - the app can work with empty databases
-fi
+# Fixtures bundle not available - skipping fixture loading
+# The app can work with empty database
+echo "⚠️  Fixtures bundle not configured - skipping fixture load"
 
 echo "Checking database connection..."
 php bin/console doctrine:query:sql "SELECT 1" 2>&1 | head -5 || {
