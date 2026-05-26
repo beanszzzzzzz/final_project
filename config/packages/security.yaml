@@ -53,7 +53,12 @@ security:
         - { path: ^/api/register$, roles: PUBLIC_ACCESS }
         - { path: ^/api/verify-email/, roles: PUBLIC_ACCESS }
         
-        # Public web routes
+        # Public web routes - Landing pages
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/about$, roles: PUBLIC_ACCESS }
+        - { path: ^/menu$, roles: PUBLIC_ACCESS }
+        - { path: ^/contact$, roles: PUBLIC_ACCESS }
+        - { path: ^/reserve$, roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/verify-email/, roles: PUBLIC_ACCESS }
         - { path: ^/connect/google$, roles: PUBLIC_ACCESS }
@@ -63,24 +68,5 @@ security:
         # Protected API endpoints
         - { path: ^/api/, roles: ROLE_USER }
         
-        # Protected web routes
+        # Protected web routes (catch-all for authenticated users)
         - { path: ^/, roles: ROLE_USER }
-        - { path: ^/api/verify-email/, roles: PUBLIC_ACCESS }
-
-        # Customer self-service API routes
-        - { path: ^/api/me, roles: ROLE_USER }
-
-        # Staff API routes
-        - { path: ^/api/customers, roles: ROLE_STAFF }
-        
-        # Admin only routes
-        - { path: ^/dashboard/product/new, roles: ROLE_ADMIN }
-        - { path: ^/dashboard/product/\d+/edit, roles: ROLE_ADMIN }
-        - { path: ^/dashboard/products, roles: ROLE_ADMIN }
-        
-        # Staff and Admin routes
-        - { path: ^/dashboard, roles: ROLE_STAFF }
-        - { path: ^/dashboard/product/\d+, roles: ROLE_STAFF }
-        
-        # User routes (all authenticated users)
-        - { path: ^/profile, roles: ROLE_USER }
